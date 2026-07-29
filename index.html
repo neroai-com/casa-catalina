@@ -1,0 +1,635 @@
+<style>
+  :root{
+    --canvas:#F1F0EA; --paper:#FBFAF6; --mist:#E6ECE8; --ink:#16302E;
+    --stone:#546A67; --line:#DAD8CF; --ocean:#0F6E7A; --ocean-deep:#0A5560;
+    --terra:#C4693D; --brass:#B0863A; --sea:#7FA9AC;
+    --serif:'Iowan Old Style','Palatino Linotype','Palatino','Book Antiqua',Georgia,'Times New Roman',serif;
+    --sans:ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+    --wrap:1120px; --header-h:64px;
+    --shadow:0 18px 50px -20px rgba(16,48,46,.35);
+    --shadow-sm:0 8px 24px -12px rgba(16,48,46,.28);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+  body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--sans);
+    font-size:17px;line-height:1.7;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:hidden}
+  img{max-width:100%;display:block}
+  a{color:inherit;text-decoration:none}
+  h1,h2,h3{font-family:var(--serif);font-weight:600;line-height:1.05;margin:0;text-wrap:balance;letter-spacing:-.01em}
+  h1{font-size:clamp(2.7rem,8.5vw,5.2rem)}
+  h2{font-size:clamp(2rem,4.6vw,3.05rem);letter-spacing:-.02em}
+  h3{font-size:1.28rem;letter-spacing:-.01em}
+  p{margin:0}
+  .wrap{max-width:var(--wrap);margin:0 auto;padding:0 22px}
+  .eyebrow{font-family:var(--mono);text-transform:uppercase;letter-spacing:.24em;font-size:.68rem;color:var(--terra);font-weight:600}
+  .lead{font-size:clamp(1.05rem,2.2vw,1.22rem);color:var(--stone);line-height:1.65}
+  .sec{padding:clamp(3.6rem,9vw,6.6rem) 0}
+  .sec-mist{background:var(--mist)}
+  .center{text-align:center}
+  .muted{color:var(--stone)}
+  /* buttons */
+  .btn{display:inline-flex;align-items:center;gap:.5rem;font-weight:600;font-size:.98rem;
+    padding:.85rem 1.5rem;border-radius:999px;border:1px solid transparent;cursor:pointer;
+    transition:transform .25s cubic-bezier(.22,1,.36,1),background .25s,box-shadow .25s,color .25s;white-space:nowrap}
+  .btn:active{transform:translateY(1px)}
+  .btn-primary{background:var(--ocean);color:#fff;box-shadow:0 10px 24px -10px rgba(15,110,122,.7)}
+  .btn-primary:hover{background:var(--ocean-deep);transform:translateY(-2px)}
+  .btn-ghost{border-color:var(--line);color:var(--ink);background:var(--paper)}
+  .btn-ghost:hover{border-color:var(--ocean);color:var(--ocean)}
+  .btn-light{background:rgba(255,255,255,.14);color:#fff;border-color:rgba(255,255,255,.4);backdrop-filter:blur(6px)}
+  .btn-light:hover{background:rgba(255,255,255,.24)}
+  .icon{width:1.15em;height:1.15em;flex:none;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+  /* header */
+  header{position:fixed;inset:0 0 auto 0;height:var(--header-h);z-index:60;display:flex;align-items:center;
+    transition:background .35s,box-shadow .35s,border-color .35s;border-bottom:1px solid transparent}
+  header .wrap{display:flex;align-items:center;justify-content:space-between;width:100%}
+  .brand{font-family:var(--serif);font-size:1.35rem;font-weight:600;color:#fff;transition:color .35s;letter-spacing:-.01em}
+  nav.main{display:flex;align-items:center;gap:1.6rem}
+  nav.main a{font-size:.92rem;font-weight:500;color:rgba(255,255,255,.9);transition:color .35s}
+  nav.main a.navlink:hover{color:#fff}
+  header.solid{background:rgba(251,250,246,.9);backdrop-filter:blur(12px);border-color:var(--line);box-shadow:0 4px 20px -14px rgba(16,48,46,.4)}
+  header.solid .brand{color:var(--ink)}
+  header.solid nav.main a{color:var(--stone)}
+  header.solid nav.main a.navlink:hover{color:var(--ocean)}
+  .nav-cta{padding:.55rem 1.1rem;border-radius:999px;border:1px solid rgba(255,255,255,.5);color:#fff !important}
+  header.solid .nav-cta{border-color:var(--ocean);color:var(--ocean) !important;background:transparent}
+  header.solid .nav-cta:hover{background:var(--ocean);color:#fff !important}
+  .hide-mobile{display:inline-flex}
+  @media(max-width:720px){nav.main .navlink{display:none}}
+  /* hero */
+  .hero{position:relative;min-height:100svh;display:flex;align-items:flex-end;overflow:hidden}
+  .hero-img{position:absolute;inset:-6% 0;width:100%;height:112%;object-fit:cover;z-index:0;animation:kb 22s ease-in-out infinite alternate}
+  @keyframes kb{from{transform:scale(1.04)}to{transform:scale(1.13)}}
+  @media (prefers-reduced-motion:reduce){.hero-img{animation:none;transform:scale(1.05)}}
+  .hero-scrim{position:absolute;inset:0;z-index:1;
+    background:linear-gradient(180deg,rgba(10,40,44,.42)0%,rgba(10,40,44,.12)32%,rgba(8,30,34,.15)60%,rgba(8,26,30,.72)100%)}
+  .hero-inner{position:relative;z-index:2;width:100%;padding:0 0 clamp(3rem,7vw,5rem)}
+  .hero .eyebrow{color:rgba(255,255,255,.92)}
+  .hero h1{color:#fff;margin:.6rem 0 0;text-shadow:0 2px 30px rgba(0,0,0,.35)}
+  .hero-lead{max-width:34rem;margin:1.3rem 0 0;color:rgba(255,255,255,.94);font-size:clamp(1.05rem,2.3vw,1.24rem);
+    line-height:1.6;text-shadow:0 1px 14px rgba(0,0,0,.4)}
+  .chips{display:flex;flex-wrap:wrap;gap:.55rem;margin-top:1.7rem}
+  .chip{display:inline-flex;align-items:center;gap:.45rem;font-size:.86rem;color:#fff;
+    background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.24);
+    padding:.5rem .85rem;border-radius:999px;backdrop-filter:blur(6px)}
+  .chip b{font-weight:700}
+  .chip .star{color:var(--brass)}
+  .hero-cta{display:flex;flex-wrap:wrap;gap:.7rem;margin-top:1.9rem}
+  /* tile ribbon (Catalina tile motif — signature detail) */
+  .tilestrip{display:flex;height:10px;width:100%}
+  .tilestrip span{flex:1}
+  /* section heading */
+  .shead{max-width:40rem}
+  .shead h2{margin-top:.6rem}
+  .shead .lead{margin-top:1rem}
+  /* trust bar */
+  .trust{display:flex;flex-wrap:wrap;justify-content:center;gap:.7rem 2rem;padding:1.4rem 0}
+  .trust div{display:inline-flex;align-items:center;gap:.5rem;font-size:.9rem;font-weight:500;color:var(--stone)}
+  .trust .icon{color:var(--ocean)}
+  /* highlights */
+  .hl{display:grid;gap:clamp(2rem,5vw,4rem);margin-top:3rem}
+  .hlrow{display:grid;grid-template-columns:1fr 1fr;gap:clamp(1.5rem,4vw,3.5rem);align-items:center}
+  .hlrow:nth-child(even) .hltext{order:2}
+  .hlfig{position:relative;border-radius:20px;overflow:hidden;box-shadow:var(--shadow);aspect-ratio:4/3;background:var(--mist)}
+  .hlfig img{width:100%;height:100%;object-fit:cover;transition:transform 1s cubic-bezier(.22,1,.36,1)}
+  .hlrow:hover .hlfig img{transform:scale(1.05)}
+  .hltext h3{font-size:clamp(1.5rem,3vw,2rem);margin-top:.8rem}
+  .hltext p{margin-top:.9rem;color:var(--stone)}
+  .hlmark{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:12px;
+    background:rgba(15,110,122,.1);color:var(--ocean)}
+  @media(max-width:760px){.hlrow{grid-template-columns:1fr}.hlrow:nth-child(even) .hltext{order:0}}
+  /* gallery */
+  .gal{columns:2;column-gap:14px;margin-top:2.4rem}
+  @media(min-width:760px){.gal{columns:3;column-gap:16px}}
+  .gal figure{margin:0 0 14px;break-inside:avoid;border-radius:16px;overflow:hidden;cursor:pointer;
+    box-shadow:var(--shadow-sm);background:var(--mist);position:relative}
+  .gal img{width:100%;height:auto;transition:transform .8s cubic-bezier(.22,1,.36,1)}
+  .gal figure:hover img{transform:scale(1.06)}
+  /* the space */
+  .sleeps{display:inline-flex;align-items:center;gap:.6rem;margin-top:1.6rem;background:rgba(15,110,122,.1);
+    color:var(--ocean-deep);padding:.6rem 1.1rem;border-radius:999px;font-weight:600;font-size:.95rem}
+  .rooms{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:2.2rem}
+  @media(max-width:760px){.rooms{grid-template-columns:1fr}}
+  .room{background:var(--paper);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:var(--shadow-sm)}
+  .room .rimg{aspect-ratio:4/3;overflow:hidden;background:var(--mist)}
+  .room .rimg img{width:100%;height:100%;object-fit:cover;transition:transform .8s cubic-bezier(.22,1,.36,1)}
+  .room:hover .rimg img{transform:scale(1.05)}
+  .room .rbody{padding:1.1rem 1.2rem 1.3rem}
+  .room .rbed{color:var(--terra);font-weight:600;font-size:.9rem;margin-top:.25rem}
+  .room .rnote{color:var(--stone);font-size:.95rem;margin-top:.5rem}
+  .notes{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem 1.6rem;margin-top:2rem;list-style:none;padding:0}
+  @media(max-width:760px){.notes{grid-template-columns:1fr}}
+  .notes li{display:flex;gap:.6rem;align-items:flex-start;font-size:.97rem}
+  .notes .icon{color:var(--sea);margin-top:.2rem;stroke-width:2.2}
+  /* amenities */
+  .amgroups{display:grid;grid-template-columns:repeat(4,1fr);gap:1.6rem 2rem;margin-top:2.4rem}
+  @media(max-width:900px){.amgroups{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:520px){.amgroups{grid-template-columns:1fr}}
+  .amgroup h4{margin:0 0 .9rem;font-family:var(--mono);text-transform:uppercase;letter-spacing:.14em;
+    font-size:.7rem;color:var(--stone);font-weight:700}
+  .amgroup ul{list-style:none;margin:0;padding:0;display:grid;gap:.7rem}
+  .amgroup li{display:flex;gap:.6rem;align-items:center;font-size:.95rem}
+  .amgroup li .icon{color:var(--ocean)}
+  .amgroup li.feat{font-weight:600}
+  /* location */
+  .locgrid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(1.5rem,4vw,3rem);margin-top:2.6rem;align-items:start}
+  @media(max-width:860px){.locgrid{grid-template-columns:1fr}}
+  .locfig{position:relative;border-radius:20px;overflow:hidden;box-shadow:var(--shadow);aspect-ratio:16/11}
+  .locfig img{width:100%;height:100%;object-fit:cover}
+  .locfig .pin{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);width:34px;height:34px;border-radius:50%;
+    background:var(--terra);border:3px solid #fff;box-shadow:0 6px 16px rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;color:#fff}
+  .locfig .pin::after{content:"";position:absolute;inset:-10px;border-radius:50%;border:2px solid rgba(255,255,255,.6);animation:ping 2.4s ease-out infinite}
+  @keyframes ping{0%{transform:scale(.6);opacity:.9}100%{transform:scale(1.5);opacity:0}}
+  @media (prefers-reduced-motion:reduce){.locfig .pin::after{animation:none}}
+  .locfig .addr{position:absolute;inset:auto 0 0 0;padding:2.2rem 1rem .9rem;color:#fff;font-size:.92rem;font-weight:500;
+    background:linear-gradient(0deg,rgba(8,30,34,.85),transparent)}
+  .dist{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:14px}
+  .dist div{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:.9rem 1rem}
+  .dist b{font-family:var(--serif);font-size:1.2rem;display:block}
+  .dist span{color:var(--stone);font-size:.86rem}
+  .guide{display:grid;gap:12px}
+  .gcard{display:flex;gap:1rem;align-items:center;background:var(--paper);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+  .gcard .gimg{width:118px;flex:none;align-self:stretch;overflow:hidden;background:var(--mist)}
+  .gcard .gimg img{width:100%;height:100%;object-fit:cover;min-height:96px}
+  .gcard .gtx{padding:.8rem 1rem .8rem 0}
+  .gcard h4{margin:0;font-family:var(--serif);font-size:1.05rem;font-weight:600;display:flex;align-items:center;gap:.45rem}
+  .gcard h4 .icon{color:var(--terra)}
+  .gcard p{color:var(--stone);font-size:.88rem;margin-top:.3rem;line-height:1.5}
+  .facts{margin-top:16px;background:var(--ink);color:#EAF0EE;border-radius:16px;padding:1.2rem 1.3rem}
+  .facts .eyebrow{color:var(--sea)}
+  .facts p{margin-top:.5rem;font-size:.98rem;line-height:1.6;min-height:3.2em}
+  /* reviews */
+  .revhead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:1.4rem}
+  .ragg{display:flex;align-items:center;gap:.8rem}
+  .ragg .big{font-family:var(--serif);font-size:2.6rem;line-height:1}
+  .stars{display:inline-flex;gap:2px;color:var(--brass)}
+  .revs{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:2.4rem}
+  @media(max-width:820px){.revs{grid-template-columns:1fr}}
+  .rev{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:1.4rem;display:flex;flex-direction:column;gap:1rem;box-shadow:var(--shadow-sm)}
+  .rev .q{color:var(--ink);font-size:1.02rem;line-height:1.6}
+  .rev .by{border-top:1px solid var(--line);padding-top:.9rem}
+  .rev .by b{font-weight:600}
+  .rev .by span{color:var(--stone);font-size:.86rem;display:block}
+  /* host */
+  .host{display:grid;grid-template-columns:1fr 1.4fr;gap:clamp(1.5rem,4vw,3rem);align-items:center}
+  @media(max-width:760px){.host{grid-template-columns:1fr}}
+  .hostfig{border-radius:20px;overflow:hidden;box-shadow:var(--shadow);aspect-ratio:4/3}
+  .hostfig img{width:100%;height:100%;object-fit:cover}
+  .hostmeta{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.3rem}
+  .hostmeta span{font-size:.82rem;color:var(--ocean-deep);background:rgba(15,110,122,.1);padding:.4rem .8rem;border-radius:999px;font-weight:600}
+  /* booking band */
+  .book{background:var(--ink);color:#EAF0EE;border-radius:26px;padding:clamp(2.2rem,5vw,3.4rem);text-align:center;box-shadow:var(--shadow)}
+  .book h2{color:#fff}
+  .book .lead{color:rgba(234,240,238,.82);margin:1rem auto 0;max-width:34rem}
+  .book .ways{display:flex;flex-wrap:wrap;justify-content:center;gap:.7rem;margin-top:1.8rem}
+  .book .pay{margin-top:1.4rem;font-size:.9rem;color:rgba(234,240,238,.7)}
+  .book .btn-ghost{background:transparent;color:#fff;border-color:rgba(255,255,255,.35)}
+  .book .btn-ghost:hover{border-color:#fff;color:#fff;background:rgba(255,255,255,.08)}
+  /* faq */
+  .faq{max-width:48rem;margin:2.4rem auto 0}
+  .faq details{border-bottom:1px solid var(--line);padding:.3rem 0}
+  .faq summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:1rem;
+    padding:1.1rem .2rem;font-weight:600;font-size:1.05rem;color:var(--ink)}
+  .faq summary::-webkit-details-marker{display:none}
+  .faq summary .chev{transition:transform .3s;color:var(--ocean)}
+  .faq details[open] summary .chev{transform:rotate(180deg)}
+  .faq .ans{padding:0 .2rem 1.1rem;color:var(--stone);line-height:1.65;max-width:44rem}
+  /* footer */
+  footer{background:var(--ink);color:#C9D6D3;padding:clamp(3rem,7vw,4.5rem) 0 2rem}
+  footer .fgrid{display:flex;flex-wrap:wrap;justify-content:space-between;gap:2rem}
+  footer h3{color:#fff;font-size:1.5rem}
+  footer .ftag{color:rgba(201,214,211,.8);margin-top:.7rem;max-width:22rem;font-size:.95rem}
+  footer .fcol h5{font-family:var(--mono);text-transform:uppercase;letter-spacing:.14em;font-size:.68rem;color:var(--sea);margin:0 0 .9rem;font-weight:700}
+  footer .fcol a,footer .fcol div{display:flex;align-items:center;gap:.5rem;color:#C9D6D3;font-size:.95rem;margin-bottom:.6rem}
+  footer .fcol a .icon{color:var(--brass)}
+  footer .fcol a:hover{color:#fff}
+  footer .fbar{border-top:1px solid rgba(255,255,255,.1);margin-top:2.6rem;padding-top:1.3rem;font-size:.8rem;color:rgba(201,214,211,.6);
+    display:flex;flex-wrap:wrap;justify-content:space-between;gap:.6rem}
+  /* sticky mobile cta */
+  .sticky{position:fixed;left:0;right:0;bottom:0;z-index:55;background:rgba(251,250,246,.96);backdrop-filter:blur(10px);
+    border-top:1px solid var(--line);padding:.7rem 16px calc(.7rem + env(safe-area-inset-bottom));
+    display:flex;align-items:center;gap:.8rem;transform:translateY(130%);transition:transform .35s cubic-bezier(.22,1,.36,1)}
+  .sticky.show{transform:translateY(0)}
+  .sticky .st{flex:1;min-width:0}
+  .sticky .st b{font-family:var(--serif);font-size:1rem;display:block}
+  .sticky .st span{font-size:.78rem;color:var(--stone)}
+  @media(min-width:861px){.sticky{display:none}}
+  /* lightbox */
+  .lb{position:fixed;inset:0;z-index:90;background:rgba(10,26,28,.92);display:none;align-items:center;justify-content:center;padding:20px}
+  .lb.open{display:flex}
+  .lb img{max-width:94vw;max-height:88vh;border-radius:10px;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+  .lb .x{position:absolute;top:16px;right:18px;color:#fff;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);
+    width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer}
+  /* reveal */
+  [data-reveal]{opacity:0;transform:translateY(26px);transition:opacity .8s cubic-bezier(.22,1,.36,1),transform .8s cubic-bezier(.22,1,.36,1)}
+  [data-reveal].in{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){[data-reveal]{opacity:1 !important;transform:none !important;transition:none}}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-star" viewBox="0 0 24 24"><polygon points="12 2 15 9 22 9.5 16.5 14.5 18.5 22 12 17.5 5.5 22 7.5 14.5 2 9.5 9 9" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-car" viewBox="0 0 24 24"><path d="M5 13l1.5-4.5A2 2 0 0 1 8.4 7h7.2a2 2 0 0 1 1.9 1.5L19 13m-14 0h14m-14 0v4m14-4v4M7 17h.01M17 17h.01M5 17v1M19 17v1"/><circle cx="7.5" cy="14.5" r="0"/></symbol>
+    <symbol id="i-sparkles" viewBox="0 0 24 24"><path d="M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6zM19 14l.8 2.2L22 17l-2.2.8L19 20l-.8-2.2L16 17l2.2-.8z"/></symbol>
+    <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="M10.8 12.2L20 3m-4 1l2 2m-4 0l2 2"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s7-6 7-11a7 7 0 1 0-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.4"/></symbol>
+    <symbol id="i-palm" viewBox="0 0 24 24"><path d="M12 22V11m0 0c0-3 2-5 5-5m-5 5c0-3-2-5-5-5m5 5c2-2 5-2 7-.5M12 11c-2-2-5-2-7-.5M12 11c1-2.5 4-3.5 6-2.5"/></symbol>
+    <symbol id="i-chef" viewBox="0 0 24 24"><path d="M7 21h10M6 17h12v-1a3 3 0 0 0-.5-6 4 4 0 0 0-7.8-1A3.5 3.5 0 0 0 6 16z"/></symbol>
+    <symbol id="i-bed" viewBox="0 0 24 24"><path d="M3 18V8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10M3 14h18M3 18v-4m18 4v-4M7 10h4"/></symbol>
+    <symbol id="i-tv" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M8 21h8M12 3v3"/></symbol>
+    <symbol id="i-snow" viewBox="0 0 24 24"><path d="M12 2v20M4 6l16 12M20 6L4 18M12 6l3 2m-6 0l3-2m-3 8l-3 2m9-2l3 2"/></symbol>
+    <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M5 12.5a10 10 0 0 1 14 0M8 15.5a6 6 0 0 1 8 0"/><circle cx="12" cy="19" r="1" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-bath" viewBox="0 0 24 24"><path d="M4 12h16v3a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4zM6 12V6a2 2 0 0 1 2-2 2 2 0 0 1 2 2M7 19l-1 2m12-2l1 2"/></symbol>
+    <symbol id="i-utensils" viewBox="0 0 24 24"><path d="M6 3v8a2 2 0 0 0 4 0V3M8 3v18M17 3c-1.5 0-2.5 2-2.5 4.5S15.5 12 17 12v9"/></symbol>
+    <symbol id="i-coffee" viewBox="0 0 24 24"><path d="M4 8h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5zM17 9h1.5a2.5 2.5 0 0 1 0 5H17M7 3v2M11 3v2"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0M16 5.5a3 3 0 0 1 0 5.5M21 20a5.5 5.5 0 0 0-3-4.9"/></symbol>
+    <symbol id="i-flame" viewBox="0 0 24 24"><path d="M12 3s5 4 5 9a5 5 0 0 1-10 0c0-1.5.7-2.8 1.5-3.5C8.5 10 9 12 10 12c0-2 2-3.5 2-6-.3-1.5.5-2.5 0-3z"/></symbol>
+    <symbol id="i-umbrella" viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 1 9 9H3a9 9 0 0 1 9-9zM12 12v7a2 2 0 0 0 4 0"/></symbol>
+    <symbol id="i-ship" viewBox="0 0 24 24"><path d="M3 15l1.5-5h15L21 15M12 4v6M4 15c1.5 2 3 3 4 3m0-3c1.5 2 3 3 4 3m0-3c1.5 2 3 3 4 3M6 10V7h12v3"/></symbol>
+    <symbol id="i-anchor" viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"/><path d="M12 7v13M6 12H4a8 8 0 0 0 16 0h-2M8 11l4-4 4 4"/></symbol>
+    <symbol id="i-waves" viewBox="0 0 24 24"><path d="M2 8c2-2 4-2 6 0s4 2 6 0 4-2 6 0M2 13c2-2 4-2 6 0s4 2 6 0 4-2 6 0M2 18c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><path d="M5 4h3l2 5-2.5 1.5a11 11 0 0 0 5 5L14 13l5 2v3a2 2 0 0 1-2 2A15 15 0 0 1 3 6a2 2 0 0 1 2-2z"/></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M4 7l8 6 8-6"/></symbol>
+    <symbol id="i-msg" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-4 3v-3H4z"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h16M14 6l6 6-6 6"/></symbol>
+    <symbol id="i-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+    <symbol id="i-mountain" viewBox="0 0 24 24"><path d="M3 20l6-11 4 6 2-3 6 8zM8 8a2 2 0 1 0 0-.01"/></symbol>
+  </defs>
+</svg>
+
+<header id="hdr">
+  <div class="wrap">
+    <a href="#top" class="brand">Casa&nbsp;Catalina</a>
+    <nav class="main">
+      <a class="navlink" href="#gallery">Gallery</a>
+      <a class="navlink" href="#space">The space</a>
+      <a class="navlink" href="#location">Location</a>
+      <a class="navlink" href="#reviews">Reviews</a>
+      <a class="nav-cta" href="#book">Check availability</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <!-- HERO -->
+  <section class="hero">
+    <img class="hero-img" src="images/hero.jpg" alt="Aerial view of Avalon harbour on Catalina Island with boats moored below the round white Casino">
+    <div class="hero-scrim"></div>
+    <div class="hero-inner">
+      <div class="wrap">
+        <p class="eyebrow">Avalon · Catalina Island</p>
+        <h1>Casa Catalina</h1>
+        <p class="hero-lead">A beautifully remodeled home tucked above the harbour in Avalon — two king suites, a private patio, and a street-legal golf cart included for your whole stay. A short walk down to the beach, the town, and the ferry.</p>
+        <div class="chips">
+          <span class="chip"><svg class="icon star"><use href="#i-star"/></svg> 5.0 · Loved on Airbnb</span>
+          <span class="chip"><b>6</b> Sleeps</span>
+          <span class="chip"><b>2</b> Bedrooms</span>
+          <span class="chip"><b>2</b> Baths</span>
+          <span class="chip"><b>Golf cart</b> Included</span>
+        </div>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="#book">Check availability <svg class="icon"><use href="#i-arrow"/></svg></a>
+          <a class="btn btn-light" href="#gallery">View gallery</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="tilestrip" aria-hidden="true" id="tiles"></div>
+
+  <!-- TRUST -->
+  <div class="wrap"><div class="trust" data-reveal>
+    <div><svg class="icon"><use href="#i-star"/></svg> Loved by Airbnb guests</div>
+    <div><svg class="icon"><use href="#i-car"/></svg> Golf cart included</div>
+    <div><svg class="icon"><use href="#i-sparkles"/></svg> Newly remodeled</div>
+    <div><svg class="icon"><use href="#i-key"/></svg> Self check-in</div>
+    <div><svg class="icon"><use href="#i-pin"/></svg> Walk to beach &amp; town</div>
+  </div></div>
+
+  <!-- HIGHLIGHTS -->
+  <section class="sec">
+    <div class="wrap">
+      <div class="shead" data-reveal>
+        <p class="eyebrow">Why Casa Catalina</p>
+        <h2>An easy island home, with the keys to Avalon out front.</h2>
+      </div>
+      <div class="hl">
+        <div class="hlrow" data-reveal>
+          <div class="hltext">
+            <span class="hlmark"><svg class="icon"><use href="#i-car"/></svg></span>
+            <h3>The island is yours</h3>
+            <p>A complimentary street-legal golf cart comes with the home, parked out front. Our guests say it's the best part of the trip — the keys to every lookout, beach, and cove in car-free Avalon.</p>
+          </div>
+          <figure class="hlfig"><img src="images/golfCart.jpg" alt="The complimentary street-legal golf cart parked in front of Casa Catalina"></figure>
+        </div>
+        <div class="hlrow" data-reveal>
+          <div class="hltext">
+            <span class="hlmark"><svg class="icon"><use href="#i-sparkles"/></svg></span>
+            <h3>Newly remodeled, top to bottom</h3>
+            <p>A brand-new, fully stocked kitchen, light-wood floors, and fresh coastal interiors throughout. Two king bedrooms, each with its own en-suite bathroom and a smart TV.</p>
+          </div>
+          <figure class="hlfig"><img src="images/kitchen.jpg" alt="Brand-new white kitchen with stainless appliances and granite counters"></figure>
+        </div>
+        <div class="hlrow" data-reveal>
+          <div class="hltext">
+            <span class="hlmark"><svg class="icon"><use href="#i-palm"/></svg></span>
+            <h3>Your own private patio</h3>
+            <p>A walled patio with a shaded dining table and a gas BBQ — the spot for morning coffee and a sunset dinner after a day out on the water.</p>
+          </div>
+          <figure class="hlfig"><img src="images/patio.jpg" alt="Private walled patio with a shaded dining set and gas BBQ under a palm"></figure>
+        </div>
+        <div class="hlrow" data-reveal>
+          <div class="hltext">
+            <span class="hlmark"><svg class="icon"><use href="#i-pin"/></svg></span>
+            <h3>Above it all, minutes from everything</h3>
+            <p>Nestled above the busy flats yet only about a half-mile stroll to the sand, the shops of Crescent Avenue, and the ferry landing.</p>
+          </div>
+          <figure class="hlfig"><img src="images/crescentAve.jpg" alt="Crescent Avenue in Avalon lined with shops and palm trees"></figure>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GALLERY -->
+  <section class="sec sec-mist" id="gallery">
+    <div class="wrap">
+      <div class="shead" data-reveal>
+        <p class="eyebrow">Gallery</p>
+        <h2>A look inside</h2>
+        <p class="lead">Every room, newly remodeled — plus the private patio and the golf cart that comes with it.</p>
+      </div>
+      <div class="gal" data-reveal>
+        <figure><img loading="lazy" src="images/livingRoom.jpg" alt="Open living room with a grey sofa flowing into the kitchen"></figure>
+        <figure><img loading="lazy" src="images/bedroomView.jpg" alt="King bedroom with tropical bedding and windows over the Avalon hillside"></figure>
+        <figure><img loading="lazy" src="images/kitchen.jpg" alt="Brand-new white kitchen"></figure>
+        <figure><img loading="lazy" src="images/patio.jpg" alt="Private patio with dining and BBQ"></figure>
+        <figure><img loading="lazy" src="images/bathTub.jpg" alt="En-suite bathroom with glass shower over tub"></figure>
+        <figure><img loading="lazy" src="images/golfCart.jpg" alt="The included street-legal golf cart"></figure>
+        <figure><img loading="lazy" src="images/livingNook.jpg" alt="Living and dining nook with ship-wheel décor and a slider to the patio"></figure>
+        <figure><img loading="lazy" src="images/bedroomKing.jpg" alt="Second king bedroom with wood headboard and mirrored closet"></figure>
+        <figure><img loading="lazy" src="images/patioUmbrella.jpg" alt="Patio dining table for six under a blue umbrella"></figure>
+        <figure><img loading="lazy" src="images/hallway.jpg" alt="Bright hallway with a jute runner"></figure>
+        <figure><img loading="lazy" src="images/bathShower.jpg" alt="En-suite bathroom with a walk-in shower"></figure>
+        <figure><img loading="lazy" src="images/grill.jpg" alt="Full-size stainless gas BBQ grill on the patio"></figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- THE SPACE -->
+  <section class="sec" id="space">
+    <div class="wrap">
+      <div class="shead" data-reveal>
+        <p class="eyebrow">The space</p>
+        <h2>The space</h2>
+        <p class="lead">Two king suites, an open living room that sleeps two more, and a private patio out back. Here's how everyone rests.</p>
+      </div>
+      <div data-reveal><span class="sleeps"><svg class="icon"><use href="#i-users"/></svg> Sleeps 6 — 2 king beds · 1 queen sleeper sofa</span></div>
+      <div class="rooms" data-reveal>
+        <div class="room"><div class="rimg"><img src="images/bedroomView.jpg" alt="Primary king suite with hillside views"></div>
+          <div class="rbody"><h3>Primary King Suite</h3><div class="rbed">King bed · en-suite bath</div><div class="rnote">Windows framing the Avalon hillside, a smart TV, and its own full bathroom.</div></div></div>
+        <div class="room"><div class="rimg"><img src="images/bedroomKing.jpg" alt="Second king suite with mirrored closet"></div>
+          <div class="rbody"><h3>Second King Suite</h3><div class="rbed">King bed · en-suite bath</div><div class="rnote">A wood headboard, mirrored closet, smart TV, and a private en-suite bathroom.</div></div></div>
+        <div class="room"><div class="rimg"><img src="images/livingRoom.jpg" alt="Open living room that opens to the patio"></div>
+          <div class="rbody"><h3>Living &amp; patio</h3><div class="rbed">Queen sleeper sofa</div><div class="rnote">An open living room that opens to the private patio, gas BBQ, and dining for six.</div></div></div>
+      </div>
+      <ul class="notes" data-reveal>
+        <li><svg class="icon"><use href="#i-check"/></svg> Two king bedrooms, each with a private en-suite bath</li>
+        <li><svg class="icon"><use href="#i-check"/></svg> Queen sleeper sofa in the living room</li>
+        <li><svg class="icon"><use href="#i-check"/></svg> Brand-new, fully stocked kitchen</li>
+        <li><svg class="icon"><use href="#i-check"/></svg> Private patio with a gas BBQ &amp; dining</li>
+        <li><svg class="icon"><use href="#i-check"/></svg> Smart TVs in every room</li>
+        <li><svg class="icon"><use href="#i-check"/></svg> Complimentary street-legal golf cart on-site</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- AMENITIES -->
+  <section class="sec sec-mist">
+    <div class="wrap">
+      <div class="shead" data-reveal><p class="eyebrow">Amenities</p><h2>Everything you'll need</h2></div>
+      <div class="amgroups" data-reveal>
+        <div class="amgroup"><h4>The essentials</h4><ul>
+          <li class="feat"><svg class="icon"><use href="#i-car"/></svg> Golf cart included</li>
+          <li class="feat"><svg class="icon"><use href="#i-chef"/></svg> Fully stocked kitchen</li>
+          <li class="feat"><svg class="icon"><use href="#i-bed"/></svg> Two king beds · en-suite</li>
+          <li class="feat"><svg class="icon"><use href="#i-tv"/></svg> Smart TVs in every room</li>
+          <li class="feat"><svg class="icon"><use href="#i-snow"/></svg> Heating &amp; air conditioning</li>
+          <li class="feat"><svg class="icon"><use href="#i-wifi"/></svg> Wi-Fi throughout</li>
+          <li class="feat"><svg class="icon"><use href="#i-bath"/></svg> Two full en-suite baths</li>
+          <li class="feat"><svg class="icon"><use href="#i-key"/></svg> Self check-in (lockbox)</li>
+        </ul></div>
+        <div class="amgroup"><h4>Kitchen &amp; dining</h4><ul>
+          <li><svg class="icon"><use href="#i-coffee"/></svg> Coffee maker &amp; cookware</li>
+          <li><svg class="icon"><use href="#i-utensils"/></svg> Gas range, fridge &amp; dishwasher</li>
+          <li><svg class="icon"><use href="#i-users"/></svg> Dining &amp; breakfast bar for six</li>
+        </ul></div>
+        <div class="amgroup"><h4>Outdoors</h4><ul>
+          <li><svg class="icon"><use href="#i-palm"/></svg> Private walled patio</li>
+          <li><svg class="icon"><use href="#i-flame"/></svg> Gas BBQ grill</li>
+          <li><svg class="icon"><use href="#i-umbrella"/></svg> Shaded patio dining</li>
+        </ul></div>
+        <div class="amgroup"><h4>Getting around</h4><ul>
+          <li><svg class="icon"><use href="#i-car"/></svg> Golf cart parked on-site</li>
+          <li><svg class="icon"><use href="#i-ship"/></svg> Minutes from the ferry</li>
+          <li><svg class="icon"><use href="#i-msg"/></svg> Local hosts, quick replies</li>
+        </ul></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOCATION -->
+  <section class="sec" id="location">
+    <div class="wrap">
+      <div class="shead" data-reveal>
+        <p class="eyebrow">Location</p>
+        <h2>Above the flats, minutes from the water</h2>
+        <p class="lead">Casa Catalina sits up above the busy streets, about a half-mile stroll down to Crescent Avenue, the beach, and the ferry — on a car-free island you'll explore best from the golf cart out front.</p>
+      </div>
+      <div class="locgrid">
+        <div data-reveal>
+          <div class="locfig">
+            <img src="images/hero.jpg" alt="Aerial of Avalon, Catalina Island">
+            <span class="pin"><svg class="icon" style="width:16px;height:16px"><use href="#i-pin"/></svg></span>
+            <div class="addr">334 Whittley Ave, Avalon, CA 90704</div>
+          </div>
+          <div class="dist">
+            <div><b>½-mile walk</b><span>Beach &amp; Crescent Ave</span></div>
+            <div><b>~10 min walk</b><span>Ferry landing</span></div>
+            <div><b>Short cart ride</b><span>The Casino</span></div>
+            <div><b>Included</b><span>Golf cart</span></div>
+          </div>
+        </div>
+        <div data-reveal>
+          <div class="guide">
+            <div class="gcard"><div class="gimg"><img src="images/casinoDining.jpg" alt="Catalina Casino across the harbour"></div>
+              <div class="gtx"><h4><svg class="icon"><use href="#i-anchor"/></svg> Catalina Casino</h4><p>The round white Art-Deco landmark on the harbour — tour the mural-lined Avalon Theatre and the grand circular ballroom above the water.</p></div></div>
+            <div class="gcard"><div class="gimg"><img src="images/palm.jpg" alt="Palm against the Catalina sky"></div>
+              <div class="gtx"><h4><svg class="icon"><use href="#i-waves"/></svg> Out on the water</h4><p>Snorkel Casino Point, ride a semi-submarine or glass-bottom boat, or rent a skiff from Joe's — Avalon's clear coves are the main event.</p></div></div>
+            <div class="gcard"><div class="gimg"><img src="images/golfCart.jpg" alt="Golf cart for exploring Avalon"></div>
+              <div class="gtx"><h4><svg class="icon"><use href="#i-car"/></svg> Cruise the lookouts</h4><p>Our guests' favourite: take the golf cart up to the scenic overlooks for the best views over Avalon and the sea.</p></div></div>
+          </div>
+          <div class="facts" data-reveal>
+            <p class="eyebrow">Did you know</p>
+            <p id="fact">Avalon runs on golf carts — the whole town is barely one square mile.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- REVIEWS -->
+  <section class="sec sec-mist" id="reviews">
+    <div class="wrap">
+      <div class="revhead" data-reveal>
+        <div class="shead"><p class="eyebrow">Reviews</p><h2>What guests say</h2></div>
+        <div class="ragg"><span class="big">5.0</span><div><span class="stars">
+          <svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg>
+        </span><div class="muted" style="font-size:.86rem">Recent Airbnb guests</div></div></div>
+      </div>
+      <div class="revs" data-reveal>
+        <div class="rev"><p class="q">"The place was exactly as shown — clean, comfortable, and accurately represented. Thomas gave clear, detailed instructions for check-in, the stay, and check-out. The golf cart was definitely the highlight of our stay. We would absolutely stay here again!"</p><div class="by"><b>Raul</b><span>Airbnb guest</span></div></div>
+        <div class="rev"><p class="q">"We were even able to check in a bit early, which we really appreciated. One of the best perks was the golf cart on the premises — it made getting around the island so convenient and fun. Thank you, Thomas! We will definitely be booking again."</p><div class="by"><b>Marcella</b><span>Airbnb guest</span></div></div>
+        <div class="rev"><p class="q">"Walking distance from the ferry and Avalon, and having a golf cart is such a plus to explore even more. You can tell right away the home was just redone — everything is new. Thomas and Megan were excellent hosts!"</p><div class="by"><b>Kerryanne</b><span>Airbnb guest</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOST -->
+  <section class="sec">
+    <div class="wrap host">
+      <div class="hostfig" data-reveal><img src="images/livingNook.jpg" alt="Inside Casa Catalina"></div>
+      <div data-reveal>
+        <p class="eyebrow">Your hosts</p>
+        <h2 style="margin-top:.5rem">Meet Thomas &amp; Megan</h2>
+        <p class="lead" style="margin-top:1rem">We grew up on Catalina — running the safe, cozy streets of Avalon with the island's beaches as our backyard. Casa Catalina is our way of sharing the place we love. We remodeled it top to bottom, we answer every message ourselves, and we'll happily point you to the best table in town and the quietest cove to snorkel.</p>
+        <div class="hostmeta">
+          <span>Born-and-raised locals</span><span>Self check-in</span><span>Golf cart included</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BOOKING -->
+  <section class="sec sec-mist" id="book">
+    <div class="wrap">
+      <div class="book" data-reveal>
+        <p class="eyebrow" style="color:var(--sea)">Book direct</p>
+        <h2 style="margin-top:.5rem">Request your dates</h2>
+        <p class="lead">Tell us when you'd like to come and how many guests, and Thomas &amp; Megan will confirm by email or text. For the fastest answer, call or text the host directly.</p>
+        <div class="ways">
+          <a class="btn btn-primary" href="tel:+13106126493"><svg class="icon"><use href="#i-phone"/></svg> 310.612.6493</a>
+          <a class="btn btn-ghost" href="mailto:334Whittley@gmail.com?subject=Casa%20Catalina%20booking%20inquiry&body=Hi%20Thomas%20%26%20Megan%2C%0A%0AWe%27d%20love%20to%20stay%20at%20Casa%20Catalina.%0ADates%3A%20%0AGuests%3A%20%0A%0AThanks%21"><svg class="icon"><use href="#i-mail"/></svg> Email an inquiry</a>
+          <a class="btn btn-ghost" href="sms:+13106126493"><svg class="icon"><use href="#i-msg"/></svg> Text us</a>
+        </div>
+        <p class="pay">Pay by PayPal, Venmo, or Zelle once your dates are confirmed — no booking fees.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="sec">
+    <div class="wrap">
+      <div class="shead center" style="margin:0 auto" data-reveal><p class="eyebrow">Good to know</p><h2>Questions, answered</h2></div>
+      <div class="faq" data-reveal>
+        <details><summary>Is the golf cart really included? <svg class="icon chev"><use href="#i-chev"/></svg></summary><div class="ans">Yes — a complimentary street-legal golf cart comes with the home for your entire stay, parked on-site. It's the perfect way to explore all of Avalon, and guests consistently say it's the highlight of their trip.</div></details>
+        <details><summary>How many people does it sleep? <svg class="icon chev"><use href="#i-chev"/></svg></summary><div class="ans">Six. Two bedrooms with king beds — each with its own en-suite bathroom — plus a queen sleeper sofa in the living room.</div></details>
+        <details><summary>When can I check in and out? <svg class="icon chev"><use href="#i-chev"/></svg></summary><div class="ans">Self check-in is by lockbox, for a flexible and private arrival. Once you're booked we'll send a welcome message with full check-in instructions by text and email.</div></details>
+        <details><summary>How do I book and pay? <svg class="icon chev"><use href="#i-chev"/></svg></summary><div class="ans">Call or text the host directly, or send an inquiry with your dates and guest count. We confirm availability, then take payment by PayPal, Venmo, or Zelle — no booking fees.</div></details>
+        <details><summary>How do we get there? <svg class="icon chev"><use href="#i-chev"/></svg></summary><div class="ans">Catalina Express ferries run about an hour from Long Beach, San Pedro, or Dana Point. From the landing it's a short walk up to the home — or ask us about luggage help.</div></details>
+        <details><summary>What's the cancellation policy? <svg class="icon chev"><use href="#i-chev"/></svg></summary><div class="ans">Cancellation terms are discussed and agreed with you before booking, so everything's clear up front.</div></details>
+        <details><summary>Are pets okay? <svg class="icon chev"><use href="#i-chev"/></svg></summary><div class="ans">We've happily hosted guests with pets — just ask us before you book and we'll do our best to say yes.</div></details>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fgrid">
+      <div style="max-width:24rem">
+        <h3>Casa Catalina</h3>
+        <p class="ftag">A newly remodeled home above Avalon — hosted, and booked, direct by Thomas &amp; Megan Gill.</p>
+        <div class="tilestrip" style="height:8px;border-radius:4px;overflow:hidden;margin-top:1.2rem;max-width:220px" id="tiles2"></div>
+      </div>
+      <div class="fcol">
+        <h5>Reach us</h5>
+        <a href="tel:+13106126493"><svg class="icon"><use href="#i-phone"/></svg> 310.612.6493</a>
+        <a href="mailto:334Whittley@gmail.com"><svg class="icon"><use href="#i-mail"/></svg> 334Whittley@gmail.com</a>
+        <a href="sms:+13106126493"><svg class="icon"><use href="#i-msg"/></svg> Text us</a>
+        <div><svg class="icon"><use href="#i-pin"/></svg> 334 Whittley Ave, Avalon, CA 90704</div>
+      </div>
+      <div class="fcol">
+        <h5>Explore</h5>
+        <a href="#gallery">Gallery</a>
+        <a href="#space">The space</a>
+        <a href="#location">Location</a>
+        <a href="#book">Book direct</a>
+      </div>
+    </div>
+    <div class="fbar">
+      <span>© 2026 Catalina Rentals Hub · Casa Catalina</span>
+      <span>Independently hosted · book direct</span>
+    </div>
+  </div>
+</footer>
+
+<div class="sticky" id="sticky">
+  <div class="st"><b>Rates by request</b><span>Casa Catalina · Avalon</span></div>
+  <a class="btn btn-primary" href="#book">Check availability <svg class="icon"><use href="#i-arrow"/></svg></a>
+</div>
+
+<div class="lb" id="lb"><span class="x" id="lbx"><svg class="icon" style="width:20px;height:20px;stroke:#fff"><use href="#i-arrow"/></svg></span><img id="lbimg" src="" alt=""></div>
+
+<script>
+(function(){
+  var reduce = matchMedia('(prefers-reduced-motion:reduce)').matches;
+  // Catalina-tile ribbon
+  var palette=['#0F6E7A','#C4693D','#B0863A','#2E8B8F','#E7ECE8','#0A5560','#C4693D','#7FA9AC','#B0863A','#0F6E7A','#2E8B8F','#C4693D'];
+  ['tiles','tiles2'].forEach(function(id){
+    var el=document.getElementById(id); if(!el)return;
+    palette.forEach(function(c){var s=document.createElement('span');s.style.background=c;el.appendChild(s);});
+  });
+  // reveal on scroll
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{threshold:.12,rootMargin:'0px 0px -8% 0px'});
+  document.querySelectorAll('[data-reveal]').forEach(function(n){if(reduce){n.classList.add('in');}else{io.observe(n);}});
+  // header + sticky on scroll
+  var hdr=document.getElementById('hdr'), sticky=document.getElementById('sticky'), book=document.getElementById('book');
+  function onScroll(){
+    var y=window.scrollY;
+    hdr.classList.toggle('solid', y>60);
+    var bookTop = book.getBoundingClientRect().top;
+    var show = y>520 && bookTop>window.innerHeight*0.6;
+    sticky.classList.toggle('show', show);
+  }
+  onScroll(); window.addEventListener('scroll',onScroll,{passive:true});
+  // rotating fact
+  var facts=[
+    'Avalon runs on golf carts — the whole town is barely one square mile.',
+    'Those famous glazed tiles were made here, from the island’s own mineral oxides.',
+    'Fourteen bison came for a 1924 film shoot and never left — over 100 roam the interior today.'
+  ];
+  var fi=0, fe=document.getElementById('fact');
+  if(!reduce){ setInterval(function(){ fi=(fi+1)%facts.length; fe.style.opacity=0; setTimeout(function(){fe.textContent=facts[fi];fe.style.opacity=1;},280); }, 4600); fe.style.transition='opacity .3s'; }
+  // lightbox
+  var lb=document.getElementById('lb'), lbimg=document.getElementById('lbimg'), lbx=document.getElementById('lbx');
+  document.querySelectorAll('.gal figure img').forEach(function(im){
+    im.addEventListener('click',function(){ lbimg.src=im.src; lbimg.alt=im.alt; lb.classList.add('open'); });
+  });
+  function closeLb(){lb.classList.remove('open');lbimg.src='';}
+  lbx.addEventListener('click',closeLb);
+  lb.addEventListener('click',function(e){if(e.target===lb)closeLb();});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLb();});
+  // smooth anchor + close mobile
+  document.querySelectorAll('a[href^="#"]').forEach(function(a){
+    a.addEventListener('click',function(e){
+      var t=document.querySelector(a.getAttribute('href')); if(!t)return;
+      e.preventDefault();
+      t.scrollIntoView({behavior:reduce?'auto':'smooth',block: a.getAttribute('href')==='#top'?'start':'start'});
+    });
+  });
+})();
+</script>
