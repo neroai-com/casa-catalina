@@ -58,6 +58,23 @@
   #prog{position:fixed;top:0;left:0;height:3px;width:100%;z-index:80;transform:scaleX(0);transform-origin:0 50%;
     background:linear-gradient(90deg,var(--ocean),var(--sea));will-change:transform}
 
+  /* first-load logo curtain */
+  #loader{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;
+    background:radial-gradient(120% 120% at 50% 38%, #FBFAF6 0%, #ECE9E1 100%);
+    transition:opacity .8s var(--ease),visibility .8s var(--ease)}
+  #loader.done{opacity:0;visibility:hidden}
+  #loader .ld-inner{display:flex;flex-direction:column;align-items:center;gap:1.5rem}
+  #loader .ld-logo{width:min(60vw,246px);height:auto;filter:drop-shadow(0 12px 32px rgba(16,48,46,.16));
+    animation:ldpop .9s var(--ease) both,ldfloat 3.4s ease-in-out .9s infinite alternate}
+  #loader.done .ld-logo{transform:scale(1.07);transition:transform .8s var(--ease)}
+  @keyframes ldpop{0%{opacity:0;transform:scale(.84) translateY(10px)}60%{opacity:1}100%{opacity:1;transform:scale(1) translateY(0)}}
+  @keyframes ldfloat{from{transform:translateY(0)}to{transform:translateY(-7px)}}
+  #loader .ld-bar{width:min(44vw,168px);height:3px;border-radius:3px;background:rgba(16,48,46,.1);overflow:hidden}
+  #loader .ld-bar span{display:block;height:100%;width:38%;border-radius:3px;
+    background:linear-gradient(90deg,var(--ocean),var(--terra),var(--brass));animation:ldbar 1.5s ease-in-out infinite}
+  @keyframes ldbar{0%{transform:translateX(-140%)}100%{transform:translateX(340%)}}
+  @media (prefers-reduced-motion:reduce){#loader .ld-logo{animation:none}#loader .ld-bar span{animation:none;width:100%}}
+
   /* buttons */
   .btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;font-weight:600;font-size:.95rem;
     padding:.85rem 1.4rem;border-radius:999px;border:1px solid transparent;cursor:pointer;line-height:1;
@@ -357,6 +374,7 @@
 </style>
 </head>
 <body>
+<div id="loader" aria-hidden="true"><div class="ld-inner"><img class="ld-logo" src="images/logo-casa-catalina.png" alt="Casa Catalina" width="246" height="246"><div class="ld-bar"><span></span></div></div></div>
 <div id="prog" aria-hidden="true"></div>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
@@ -756,6 +774,17 @@
 (function(){
   var reduce = matchMedia('(prefers-reduced-motion:reduce)').matches;
   var raf = requestAnimationFrame;
+
+  // first-load logo curtain — visible ~1.8s (or until the page loads), then dissolves; safety-capped
+  (function(){
+    var loader=document.getElementById('loader'); if(!loader)return;
+    var now=function(){ return (window.performance&&performance.now)?performance.now():0; };
+    var t0=now(), hidden=false;
+    function hide(){ if(hidden)return; hidden=true; loader.classList.add('done'); setTimeout(function(){ loader.style.display='none'; },850); }
+    function schedule(){ setTimeout(hide, Math.max(0, 1800-(now()-t0))); }
+    if(document.readyState==='complete') schedule(); else window.addEventListener('load', schedule);
+    setTimeout(hide, 3600);
+  })();
 
   // Hide decorative icons from assistive tech; label the star rating.
   document.querySelectorAll('svg.icon').forEach(function(s){ s.setAttribute('aria-hidden','true'); s.setAttribute('focusable','false'); });
