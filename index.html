@@ -8,16 +8,44 @@
 <meta name="theme-color" content="#0F6E7A">
 <meta name="color-scheme" content="light">
 <link rel="canonical" href="https://neroai-com.github.io/casa-catalina/">
+<link rel="preload" as="image" href="images/hero.jpg" fetchpriority="high">
 <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
 <link rel="icon" type="image/png" sizes="192x192" href="images/favicon-192.png">
 <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
-<link rel="icon" href="images/logo-casa-catalina.png">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://neroai-com.github.io/casa-catalina/">
 <meta property="og:title" content="Casa Catalina — Remodeled Home Above Avalon">
 <meta property="og:description" content="Two king suites, a private patio, and a golf cart included — a newly remodeled Catalina Island rental in Avalon.">
 <meta property="og:image" content="https://neroai-com.github.io/casa-catalina/images/hero.jpg">
 <meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "VacationRental",
+  "name": "Casa Catalina",
+  "description": "A newly remodeled 2-bedroom vacation rental above Avalon on Catalina Island. Two king suites, a private patio, and a street-legal golf cart included.",
+  "url": "https://neroai-com.github.io/casa-catalina/",
+  "image": "https://neroai-com.github.io/casa-catalina/images/hero.jpg",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "334 Whittley Ave",
+    "addressLocality": "Avalon",
+    "addressRegion": "CA",
+    "postalCode": "90704",
+    "addressCountry": "US"
+  },
+  "telephone": "+1-310-612-6493",
+  "email": "334Whittley@gmail.com",
+  "numberOfBedrooms": 2,
+  "numberOfBathroomsTotal": 2,
+  "occupancy": { "@type": "QuantitativeValue", "maxValue": 6, "unitText": "guests" },
+  "amenityFeature": [
+    { "@type": "LocationFeatureSpecification", "name": "Street-legal golf cart included", "value": true },
+    { "@type": "LocationFeatureSpecification", "name": "Private patio with BBQ", "value": true },
+    { "@type": "LocationFeatureSpecification", "name": "Self check-in", "value": true }
+  ]
+}
+</script>
 <style>
   :root{
     --canvas:#F1F0EA; --paper:#FBFAF6; --mist:#E6ECE8; --ink:#16302E;
@@ -554,7 +582,7 @@
     </div>
     <div class="scrub" id="scrub" data-frames="90">
       <div class="scrub-pin">
-        <img class="scrub-fallback" src="images/ferry.jpg" alt="The Catalina Express ferry crossing the channel toward Catalina Island, with the island rising ahead">
+        <img class="scrub-fallback" src="images/ferry.jpg" loading="lazy" decoding="async" alt="The Catalina Express ferry crossing the channel toward Catalina Island, with the island rising ahead">
         <canvas class="scrub-canvas" id="scrubCanvas" aria-hidden="true"></canvas>
         <div class="scrub-grad" aria-hidden="true"></div>
         <div class="scrub-caps">
@@ -885,8 +913,10 @@
     if(coarse) step=Math.max(step, mem>=8?2:3);
     var imgs=new Array(N), current=-1, drawn=-1, ready=false, started=false, lastP=-1;
 
+    // Desktop (fine pointer, large viewport) gets the sharper 1024px frame set; phones keep the light 600px set.
+    var DIR=(!coarse && Math.max(window.innerWidth,window.innerHeight)>=1000)?'frames/hd/':'frames/';
     function pad(n){ n=''+n; while(n.length<3) n='0'+n; return n; }
-    function src(i){ return 'frames/j_'+pad(i)+'.webp'; }
+    function src(i){ return DIR+'j_'+pad(i)+'.webp'; }
     function nearest(t){
       if(imgs[t]&&imgs[t].__ok) return t;
       for(var d=1;d<N;d++){ var a=t-d,b=t+d;
