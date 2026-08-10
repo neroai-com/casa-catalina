@@ -32,6 +32,40 @@ Pick whichever you prefer — all serve the folder as-is.
 
 **Your own domain (linxapi / Coolify / nginx)** — copy this folder to the web root and serve it as static files. Point `catalina.linxapi.com` (or `catalinarentalshub.com`) at it.
 
+## Booking requests & the admin area
+
+The site includes a **live availability calendar + booking-request flow** backed by
+serverless functions in `api/` (no framework, no build step):
+
+- Guests pick check-in/check-out on the calendar in **Book direct**, set party size
+  (adults / children / infants / pets), and submit a request.
+- The owner signs in at **`/admin.html`** to approve or decline. Approving a request
+  **automatically blocks those nights** on the public calendar. The admin page can
+  also block dates manually (owner stays) and unblock anything.
+- Booked nights show struck-through on the calendar; a checkout day stays selectable
+  as the next guest's check-in (standard turnover).
+- On hosts without the API (e.g. plain GitHub Pages) the calendar hides itself and
+  the call/text/email buttons still work.
+
+### Set it up on Vercel
+
+1. Import the repo (Framework preset **Other**, no build command).
+2. **Storage → Create → Redis (Upstash)** from the Vercel Marketplace, attach it to the
+   project — this injects `KV_REST_API_URL` / `KV_REST_API_TOKEN` automatically.
+3. Project → **Settings → Environment Variables**:
+   - `ADMIN_PASSWORD` — the owner's sign-in password (required)
+   - `SESSION_SECRET` — any long random string (recommended)
+   - `RESEND_API_KEY` + `NOTIFY_EMAIL` — optional; emails the owner on each new request
+4. Redeploy. The calendar appears on the site and `/admin.html` is live.
+
+### Run it locally
+
+```bash
+ADMIN_PASSWORD=yourpassword npm run dev   # http://localhost:8099
+```
+
+Requests/blocks are stored in `dev-data.json` (gitignored) locally.
+
 ## Edit it
 
 - **Words:** edit the text directly in `index.html`.

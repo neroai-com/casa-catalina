@@ -36,9 +36,12 @@
   },
   "telephone": "+1-310-612-6493",
   "email": "334Whittley@gmail.com",
-  "numberOfBedrooms": 2,
-  "numberOfBathroomsTotal": 2,
-  "occupancy": { "@type": "QuantitativeValue", "maxValue": 6, "unitText": "guests" },
+  "containsPlace": {
+    "@type": "Accommodation",
+    "numberOfBedrooms": 2,
+    "numberOfBathroomsTotal": 2,
+    "occupancy": { "@type": "QuantitativeValue", "maxValue": 6, "unitText": "guests" }
+  },
   "amenityFeature": [
     { "@type": "LocationFeatureSpecification", "name": "Street-legal golf cart included", "value": true },
     { "@type": "LocationFeatureSpecification", "name": "Private patio with BBQ", "value": true },
@@ -75,7 +78,8 @@
   ::selection{background:var(--ocean);color:#fff}
   :focus-visible{outline:2px solid var(--ocean);outline-offset:3px;border-radius:6px}
 
-  .wrap{max-width:var(--wrap);margin:0 auto;padding:0 20px}
+  .wrap{max-width:var(--wrap);margin:0 auto;padding:0 max(20px,env(safe-area-inset-right)) 0 max(20px,env(safe-area-inset-left))}
+  [id]{scroll-margin-top:calc(var(--hdr) + 10px)}
   .eyebrow{font-family:var(--mono);text-transform:uppercase;letter-spacing:.22em;font-size:.66rem;color:var(--terra-ink);font-weight:600}
   .lead{font-size:clamp(1rem,4.4vw,1.2rem);color:var(--stone);line-height:1.6}
   .sec{padding:clamp(3.2rem,11vw,6.4rem) 0}
@@ -152,6 +156,7 @@
   .drawer.open .scrim{opacity:1}
   .drawer .panel{position:absolute;top:0;right:0;height:100%;width:min(84%,340px);background:var(--paper);
     padding:calc(var(--hdr) + 1rem) 26px 26px;display:flex;flex-direction:column;gap:.4rem;
+    overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
     transform:translateX(100%);transition:transform .4s var(--ease);box-shadow:-20px 0 60px -30px rgba(16,48,46,.5)}
   .drawer.open .panel{transform:translateX(0)}
   .drawer .panel a.d-link{font-family:var(--serif);font-size:1.5rem;color:var(--ink);padding:.55rem 0;border-bottom:1px solid var(--line)}
@@ -225,8 +230,9 @@
   .galhint{display:flex;align-items:center;gap:.4rem;margin-top:.7rem;font-size:.78rem;color:var(--stone);font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase}
   @media(min-width:760px){
     .gal{display:block;columns:3;column-gap:16px;overflow:visible;margin:1.8rem 0 0;padding:0}
-    .gal figure{break-inside:avoid;margin:0 0 16px;flex:none;aspect-ratio:auto!important;display:block}
-    .gal figure img{height:auto}
+    .gal figure{break-inside:avoid;margin:0 0 16px;flex:none;display:block}
+    .gal figure:not(.vfx){aspect-ratio:auto!important}
+    .gal figure:not(.vfx) img{height:auto}
     .gal figure img{transition:transform .8s var(--ease)}
     .gal figure:hover img{transform:scale(1.05)}
     .galhint{display:none}
@@ -319,6 +325,63 @@
   .book .btn-ghost{background:transparent;color:#fff;border-color:rgba(255,255,255,.4)}
   .book .btn-ghost:hover{border-color:#fff;background:rgba(255,255,255,.08)}
 
+  /* booking calendar (shown only when the booking API is reachable) */
+  #bookCal{margin:1.8rem auto 0;max-width:30rem;text-align:left}
+  .bc-cal{background:var(--paper);color:var(--ink);border-radius:16px;padding:1rem 1rem 1.2rem;box-shadow:var(--shadow-sm)}
+  .bc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.4rem}
+  .bc-title{font-family:var(--serif);font-weight:600;font-size:1.05rem}
+  .bc-nav{width:44px;height:44px;border:1px solid var(--line);background:var(--canvas);border-radius:10px;cursor:pointer;
+    font-size:1.2rem;line-height:1;color:var(--ink);display:flex;align-items:center;justify-content:center}
+  .bc-nav:disabled{opacity:.35;cursor:default}
+  .bc-dow,.bc-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+  .bc-dow span{text-align:center;font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;color:var(--stone);padding:.3rem 0}
+  .bc-grid button{aspect-ratio:1;border:0;background:transparent;border-radius:9px;font-size:.88rem;color:var(--ink);
+    cursor:pointer;position:relative;display:flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums}
+  .bc-grid button:hover:not(:disabled){background:var(--mist)}
+  .bc-grid button:disabled{color:#B9B6AC;cursor:default}
+  .bc-grid button.blocked{color:#C9C5B9;text-decoration:line-through;text-decoration-color:rgba(158,78,39,.55)}
+  .bc-grid button.today{outline:1px dashed var(--sea);outline-offset:-3px}
+  .bc-grid button:focus-visible{outline:2px solid var(--ocean);outline-offset:-2px}
+  .bc-grid button.inrange{background:rgba(15,110,122,.14);border-radius:0}
+  .bc-grid button.start,.bc-grid button.end{background:var(--ocean);color:#fff;font-weight:600}
+  .bc-grid button.start{border-radius:9px 0 0 9px}
+  .bc-grid button.end{border-radius:0 9px 9px 0}
+  .bc-grid button.start.end{border-radius:9px}
+  .bc-legend{display:flex;gap:1rem;justify-content:center;margin-top:.7rem;font-size:.72rem;color:var(--stone)}
+  .bc-legend .lg{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:.3rem;vertical-align:-1px}
+  .bc-legend .lg.avail{background:var(--mist);border:1px solid var(--line)}
+  .bc-legend .lg.booked{background:#E5E2D8}
+  .bc-legend .lg.sel{background:var(--ocean)}
+  .bc-sum{margin:.9rem 0 0;text-align:center;font-size:.95rem;color:#EAF0EE;min-height:1.4em}
+  .bc-sum b{color:#fff}
+  .bc-party{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-top:1rem}
+  @media(max-width:420px){.bc-party{grid-template-columns:1fr}}
+  .bc-step{display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.07);
+    border:1px solid rgba(255,255,255,.16);border-radius:12px;padding:.45rem .55rem}
+  .bc-step .lbl{font-size:.82rem;color:rgba(234,240,238,.9)}
+  .bc-step .lbl small{display:block;font-size:.66rem;color:rgba(234,240,238,.55)}
+  .bc-step .ctl{display:flex;align-items:center;gap:.15rem}
+  .bc-step button{width:38px;height:38px;border-radius:10px;border:1px solid rgba(255,255,255,.3);background:transparent;
+    color:#fff;font-size:1.05rem;line-height:1;cursor:pointer}
+  .bc-step button:disabled,.bc-step button.capped{opacity:.3}
+  .bc-step button:disabled{cursor:default}
+  .bc-step .val{min-width:1.6rem;text-align:center;font-weight:600;color:#fff;font-variant-numeric:tabular-nums}
+  .bc-fields{display:flex;flex-direction:column;gap:.6rem;margin-top:1rem}
+  .bc-fields input,.bc-fields textarea{width:100%;box-sizing:border-box;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.2);
+    border-radius:12px;padding:.8rem .9rem;color:#fff;font:inherit;font-size:.95rem}
+  .bc-fields input::placeholder,.bc-fields textarea::placeholder{color:rgba(234,240,238,.5)}
+  .bc-fields input:focus,.bc-fields textarea:focus{outline:2px solid var(--sea);outline-offset:-1px}
+  .bc-fields textarea{min-height:70px;resize:vertical}
+  .bc-hp{position:absolute;left:-9999px;opacity:0;height:0;overflow:hidden}
+  #bcSubmit{margin-top:1rem;width:100%}
+  #bcSubmit:disabled{opacity:.55;cursor:default}
+  #bcMsg{margin-top:.7rem;text-align:center;font-size:.88rem;min-height:1.3em;color:#FFD9C4}
+  #bcMsg.ok{color:#B8E6C8}
+  .bc-done{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.2);border-radius:16px;
+    padding:1.4rem 1.2rem;text-align:center;margin-top:1.6rem}
+  .bc-done h3{font-family:var(--serif);color:#fff;font-size:1.35rem;margin:0 0 .4rem}
+  .bc-done p{color:rgba(234,240,238,.85);font-size:.95rem;margin:0}
+
   /* faq */
   .faq{max-width:46rem;margin:2rem auto 0}
   .faq details{border-bottom:1px solid var(--line)}
@@ -344,7 +407,7 @@
 
   /* sticky mobile cta */
   .sticky{position:fixed;left:0;right:0;bottom:0;z-index:60;background:rgba(251,250,246,.96);backdrop-filter:blur(10px);
-    border-top:1px solid var(--line);padding:.65rem 16px calc(.65rem + env(safe-area-inset-bottom));
+    border-top:1px solid var(--line);padding:.65rem max(16px,env(safe-area-inset-right)) calc(.65rem + env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));
     display:flex;align-items:center;gap:.8rem;transform:translateY(130%);transition:transform .38s var(--ease)}
   .sticky.show{transform:translateY(0)}
   .sticky .st{flex:1;min-width:0}
@@ -357,7 +420,7 @@
   .lb{position:fixed;inset:0;z-index:90;background:rgba(9,24,26,.94);display:none;align-items:center;justify-content:center;padding:16px;touch-action:none}
   .lb.open{display:flex}
   .lb img{max-width:94vw;max-height:86vh;border-radius:10px;box-shadow:0 30px 80px rgba(0,0,0,.6)}
-  .lb .x{position:absolute;top:calc(12px + env(safe-area-inset-top));right:16px;color:#fff;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);
+  .lb .x{position:absolute;top:calc(12px + env(safe-area-inset-top));right:max(16px,env(safe-area-inset-right));color:#fff;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);
     width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer}
   .lb .ct{position:absolute;bottom:calc(16px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);color:rgba(255,255,255,.82);font-family:var(--mono);font-size:.78rem;letter-spacing:.1em}
 
@@ -393,7 +456,7 @@
   .scrub-cap .jnum{font-family:var(--mono);font-size:.68rem;letter-spacing:.24em;color:var(--sea);text-transform:uppercase}
   .scrub-cap h3{font-family:var(--serif);font-size:clamp(1.8rem,7vw,3rem);color:#fff;margin:.45rem 0 0;font-weight:600;letter-spacing:-.02em;line-height:1.06}
   .scrub-cap p{color:rgba(255,255,255,.9);margin-top:.55rem;max-width:34rem;font-size:clamp(1rem,3.8vw,1.14rem);line-height:1.5}
-  .scrub-rail{position:absolute;left:20px;right:20px;bottom:calc(1.1rem + env(safe-area-inset-bottom,0px));height:3px;border-radius:3px;background:rgba(255,255,255,.16);z-index:3;overflow:hidden}
+  .scrub-rail{position:absolute;left:max(20px,env(safe-area-inset-left));right:max(20px,env(safe-area-inset-right));bottom:calc(1.1rem + env(safe-area-inset-bottom,0px));height:3px;border-radius:3px;background:rgba(255,255,255,.16);z-index:3;overflow:hidden}
   .scrub-rail span{display:block;height:100%;width:0;border-radius:3px;background:linear-gradient(90deg,var(--sea),var(--brass))}
   .scrub-hint{position:absolute;top:calc(1rem + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);z-index:3;
     display:inline-flex;align-items:center;gap:.4rem;font-family:var(--mono);font-size:.64rem;letter-spacing:.22em;text-transform:uppercase;
@@ -504,7 +567,7 @@
 <main id="top">
   <!-- HERO -->
   <section class="hero" aria-label="Casa Catalina">
-    <div class="hero-media"><div class="hero-par" id="heroPar"><div class="vfx" style="position:absolute;inset:0"><img class="hero-img vfx-poster" src="images/hero.jpg" alt="Aerial view of Avalon harbour on Catalina Island with boats moored below the round white Casino" fetchpriority="high"><video class="vfx-video" muted loop playsinline preload="none" data-src="videos/hero-aerial.mp4" aria-hidden="true"></video></div></div></div>
+    <div class="hero-media"><div class="hero-par" id="heroPar"><div class="vfx" style="position:absolute;inset:0"><img class="hero-img vfx-poster" src="images/hero.jpg" alt="Aerial view of Avalon harbor on Catalina Island with boats moored below the round white Casino" fetchpriority="high"><video class="vfx-video" muted loop playsinline preload="none" data-src="videos/hero-aerial.mp4" aria-hidden="true"></video></div></div></div>
     <div class="hero-scrim"></div>
     <div class="hero-inner">
       <div class="wrap">
@@ -513,7 +576,7 @@
         <p class="hero-lead">A beautifully remodeled home above Avalon — two king suites, a private patio, and a street-legal golf cart included for your whole stay. A short walk to the beach, the town, and the ferry.</p>
         <div class="chips">
           <span class="chip"><svg class="icon star"><use href="#i-star"/></svg> 5.0 · Loved on Airbnb</span>
-          <span class="chip"><b data-count="6">6</b> Sleeps</span>
+          <span class="chip">Sleeps <b data-count="6">6</b></span>
           <span class="chip"><b data-count="2">2</b> Bedrooms</span>
           <span class="chip"><b data-count="2">2</b> Baths</span>
           <span class="chip"><b>Golf cart</b> Included</span>
@@ -723,12 +786,12 @@
         </div>
         <div data-reveal data-d="1">
           <div class="guide">
-            <div class="gcard"><div class="gimg"><img loading="lazy" src="images/casinoDining.jpg" alt="Catalina Casino across the harbour"></div>
-              <div class="gtx"><h3><svg class="icon"><use href="#i-anchor"/></svg> Catalina Casino</h3><p>The round white Art-Deco landmark on the harbour — tour the mural-lined Avalon Theatre and the ballroom above the water.</p></div></div>
+            <div class="gcard"><div class="gimg"><img loading="lazy" src="images/casinoDining.jpg" alt="Catalina Casino across the harbor"></div>
+              <div class="gtx"><h3><svg class="icon"><use href="#i-anchor"/></svg> Catalina Casino</h3><p>The round white Art-Deco landmark on the harbor — tour the mural-lined Avalon Theatre and the ballroom above the water.</p></div></div>
             <div class="gcard"><div class="gimg"><img loading="lazy" src="images/palm.jpg" alt="Palm against the Catalina sky"></div>
               <div class="gtx"><h3><svg class="icon"><use href="#i-waves"/></svg> Out on the water</h3><p>Snorkel Casino Point, ride a semi-submarine or glass-bottom boat, or rent a skiff from Joe's over the clear coves.</p></div></div>
             <div class="gcard"><div class="gimg"><img loading="lazy" src="images/crescentAve.jpg" alt="Crescent Avenue in Avalon"></div>
-              <div class="gtx"><h3><svg class="icon"><use href="#i-car"/></svg> Cruise the lookouts</h3><p>Our guests' favourite: take the golf cart up to the scenic overlooks for the best views over Avalon and the sea.</p></div></div>
+              <div class="gtx"><h3><svg class="icon"><use href="#i-car"/></svg> Cruise the lookouts</h3><p>Our guests' favorite: take the golf cart up to the scenic overlooks for the best views over Avalon and the sea.</p></div></div>
           </div>
           <div class="facts" data-reveal>
             <p class="eyebrow">Did you know</p>
@@ -778,9 +841,42 @@
         <p class="eyebrow" style="color:var(--sea)">Book direct</p>
         <h2 style="margin-top:.4rem">Request your dates</h2>
         <p class="lead">Tell us when you'd like to come and how many guests, and Thomas &amp; Megan will confirm by email or text. For the fastest answer, call or text the host directly.</p>
+
+        <div id="bookCal" hidden>
+          <div class="bc-cal" role="group" aria-label="Availability calendar">
+            <div class="bc-head">
+              <button type="button" class="bc-nav" id="bcPrev" aria-label="Previous month">&#8249;</button>
+              <div class="bc-title" id="bcTitle" aria-live="polite"></div>
+              <button type="button" class="bc-nav" id="bcNext" aria-label="Next month">&#8250;</button>
+            </div>
+            <div class="bc-dow" aria-hidden="true"><span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span></div>
+            <div class="bc-grid" id="bcGrid"></div>
+            <div class="bc-legend" aria-hidden="true">
+              <span><span class="lg avail"></span>Open</span>
+              <span><span class="lg booked"></span>Booked</span>
+              <span><span class="lg sel"></span>Your stay</span>
+            </div>
+          </div>
+          <p class="bc-sum" id="bcSum">Tap your check-in date to start</p>
+          <div class="bc-party">
+            <div class="bc-step"><span class="lbl">Adults<small>13+</small></span><span class="ctl"><button type="button" data-step="adults" data-d="-1" aria-label="Fewer adults">&#8722;</button><span class="val" data-val="adults">2</span><button type="button" data-step="adults" data-d="1" aria-label="More adults">+</button></span></div>
+            <div class="bc-step"><span class="lbl">Children<small>2&#8211;12</small></span><span class="ctl"><button type="button" data-step="children" data-d="-1" aria-label="Fewer children">&#8722;</button><span class="val" data-val="children">0</span><button type="button" data-step="children" data-d="1" aria-label="More children">+</button></span></div>
+            <div class="bc-step"><span class="lbl">Infants<small>under 2</small></span><span class="ctl"><button type="button" data-step="infants" data-d="-1" aria-label="Fewer infants">&#8722;</button><span class="val" data-val="infants">0</span><button type="button" data-step="infants" data-d="1" aria-label="More infants">+</button></span></div>
+            <div class="bc-step"><span class="lbl">Pets<small>ask us first</small></span><span class="ctl"><button type="button" data-step="pets" data-d="-1" aria-label="Fewer pets">&#8722;</button><span class="val" data-val="pets">0</span><button type="button" data-step="pets" data-d="1" aria-label="More pets">+</button></span></div>
+          </div>
+          <div class="bc-fields">
+            <label class="bc-hp" aria-hidden="true">Website <input type="text" id="bcHp" tabindex="-1" autocomplete="off"></label>
+            <input type="text" id="bcName" placeholder="Your name" autocomplete="name" maxlength="80">
+            <input type="text" id="bcContact" placeholder="Phone or email" autocomplete="tel" maxlength="120" inputmode="email">
+            <textarea id="bcNote" placeholder="Anything we should know? (optional)" maxlength="500"></textarea>
+          </div>
+          <button type="button" class="btn btn-light" id="bcSubmit" disabled>Select dates to request</button>
+          <p id="bcMsg" role="status"></p>
+        </div>
+
         <div class="ways">
           <a class="btn btn-primary" href="tel:+13106126493"><svg class="icon"><use href="#i-phone"/></svg> 310.612.6493</a>
-          <a class="btn btn-ghost" href="mailto:334Whittley@gmail.com?subject=Casa%20Catalina%20booking%20inquiry&body=Hi%20Thomas%20%26%20Megan%2C%0A%0AWe%27d%20love%20to%20stay%20at%20Casa%20Catalina.%0ADates%3A%20%0AGuests%3A%20%0A%0AThanks%21"><svg class="icon"><use href="#i-mail"/></svg> Email an inquiry</a>
+          <a class="btn btn-ghost" href="mailto:334Whittley@gmail.com?subject=Casa%20Catalina%20booking%20inquiry&body=Hi%20Thomas%20%26%20Megan%2C%0D%0A%0D%0AWe%27d%20love%20to%20stay%20at%20Casa%20Catalina.%0D%0ADates%3A%20%0D%0AGuests%3A%20%0D%0A%0D%0AThanks%21"><svg class="icon"><use href="#i-mail"/></svg> Email an inquiry</a>
           <a class="btn btn-ghost" href="sms:+13106126493"><svg class="icon"><use href="#i-msg"/></svg> Text us</a>
         </div>
         <p class="pay">Pay by PayPal, Venmo, or Zelle once your dates are confirmed — no booking fees.</p>
@@ -1054,6 +1150,172 @@
     a.addEventListener('click',function(e){ var t=document.querySelector(a.getAttribute('href')); if(!t)return;
       e.preventDefault(); closeD(); t.scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'}); });
   });
+
+  // ---- Booking calendar: live availability + date-range requests (progressive enhancement:
+  //      stays hidden on hosts without the /api backend) ----
+  (function(){
+    var root=document.getElementById('bookCal'); if(!root||!window.fetch)return;
+    var grid=document.getElementById('bcGrid'), title=document.getElementById('bcTitle'),
+        prevB=document.getElementById('bcPrev'), nextB=document.getElementById('bcNext'),
+        sum=document.getElementById('bcSum'), submit=document.getElementById('bcSubmit'), msg=document.getElementById('bcMsg');
+    var MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+    var MON3=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    function p2(n){ return (n<10?'0':'')+n; }
+    // "Today" is the property's day (America/Los_Angeles), matching the server's check.
+    function laToday(){
+      try{ return new Intl.DateTimeFormat('en-CA',{timeZone:'America/Los_Angeles'}).format(new Date()); }
+      catch(e){ var d=new Date(); return d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate()); }
+    }
+    var today=laToday();
+    var startIdx=(+today.slice(0,4))*12+(+today.slice(5,7)-1),
+        view={y:+today.slice(0,4),m:+today.slice(5,7)-1};
+    var blocked={}, selIn=null, selOut=null, sending=false, lastFetch=0;
+    var party={adults:2,children:0,infants:0,pets:0};
+    var LIMITS={adults:[1,6],children:[0,5],infants:[0,4],pets:[0,3]};
+
+    function loadAvail(first){
+      lastFetch=Date.now();
+      fetch('/api/availability',{cache:'no-store'})
+        .then(function(r){ if(!r.ok)throw 0; return r.json(); })
+        .then(function(j){
+          blocked={};
+          (j.blocked||[]).forEach(function(b){ eachNight(b.start,b.end,function(d){ blocked[d]=1; }); });
+          if(first){ root.hidden=false; syncSteppers(); }
+          // If a refresh reveals the current selection now conflicts, start over.
+          if(selIn&&selOut&&!rangeClear(selIn,selOut)){ selIn=selOut=null; note('Availability changed — please pick your dates again.'); }
+          render(); update();
+        })
+        .catch(function(){ /* static host — booking module stays hidden, call/text CTAs remain */ });
+    }
+    loadAvail(true);
+    // Long-open tabs: quietly re-sync when the user comes back (at most once a minute).
+    document.addEventListener('visibilitychange',function(){
+      if(document.visibilityState==='visible'&&!root.hidden&&!sending&&Date.now()-lastFetch>60000) loadAvail(false);
+    });
+
+    function eachNight(a,b,fn){
+      var d=new Date(a+'T00:00:00'), end=new Date(b+'T00:00:00');
+      while(d<end){ fn(d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate())); d.setDate(d.getDate()+1); }
+    }
+    function iso(y,m,d){ return y+'-'+p2(m+1)+'-'+p2(d); }
+    function fmt(s){ var p=s.split('-'); return MON3[+p[1]-1]+' '+(+p[2]); }
+    function nightsBetween(a,b){ return Math.round((Date.parse(b+'T00:00:00Z')-Date.parse(a+'T00:00:00Z'))/86400000); }
+    function rangeClear(a,b){ var ok=true; eachNight(a,b,function(d){ if(blocked[d])ok=false; }); return ok; }
+    function note(t,ok){ msg.textContent=t||''; msg.className=ok?'ok':''; }
+
+    function render(){
+      today=laToday(); startIdx=(+today.slice(0,4))*12+(+today.slice(5,7)-1);
+      title.textContent=MONTHS[view.m]+' '+view.y;
+      var idx=view.y*12+view.m;
+      prevB.disabled=idx<=startIdx; nextB.disabled=idx>=startIdx+17;
+      grid.innerHTML='';
+      var first=new Date(view.y,view.m,1).getDay(), days=new Date(view.y,view.m+1,0).getDate();
+      for(var i=0;i<first;i++) grid.appendChild(document.createElement('span'));
+      for(var d=1;d<=days;d++)(function(d){
+        var ds=iso(view.y,view.m,d), b=document.createElement('button'); b.type='button'; b.textContent=d;
+        b.setAttribute('data-date',ds);
+        var isPast=ds<today, isBlocked=!!blocked[ds];
+        if(ds===today) b.classList.add('today');
+        if(isBlocked) b.classList.add('blocked');
+        if(selIn&&ds===selIn) b.classList.add('start');
+        if(selOut&&ds===selOut) b.classList.add('end');
+        if(selIn&&selOut&&ds>selIn&&ds<selOut) b.classList.add('inrange');
+        // A blocked day can still be a CHECK-OUT day (the prior guest's checkout morning).
+        var clickable=!isPast&&(!isBlocked||(selIn&&!selOut&&ds>selIn&&rangeClear(selIn,ds)));
+        b.disabled=!clickable;
+        b.setAttribute('aria-label',MONTHS[view.m]+' '+d+(isBlocked?' — booked':''));
+        if(clickable) b.addEventListener('click',function(){ pick(ds); });
+        grid.appendChild(b);
+      })(d);
+    }
+
+    function pick(ds){
+      if(sending)return;
+      note('');
+      if(!selIn||selOut){ selIn=ds; selOut=null; }
+      else if(ds<=selIn){ selIn=ds; }
+      else if(!rangeClear(selIn,ds)){ selIn=ds; selOut=null; note('That range includes a booked night — starting over from this date.'); }
+      else selOut=ds;
+      update(); render();
+      // render() rebuilt the grid — put keyboard focus back on the picked date.
+      var fb=grid.querySelector('button[data-date="'+ds+'"]');
+      if(fb) fb.focus({preventScroll:true});
+    }
+
+    function update(){
+      if(selIn&&selOut){
+        var n=nightsBetween(selIn,selOut), b=document.createElement('b');
+        b.textContent=fmt(selIn)+' → '+fmt(selOut);
+        sum.textContent=''; sum.appendChild(b); sum.appendChild(document.createTextNode(' · '+n+' night'+(n>1?'s':'')));
+        submit.disabled=false; submit.textContent='Request these dates';
+      } else if(selIn){
+        sum.textContent=fmt(selIn)+' — now tap your check-out date';
+        submit.disabled=true; submit.textContent='Select dates to request';
+      } else {
+        sum.textContent='Tap your check-in date to start';
+        submit.disabled=true; submit.textContent='Select dates to request';
+      }
+    }
+
+    prevB.addEventListener('click',function(){ if(--view.m<0){view.m=11;view.y--;} render(); });
+    nextB.addEventListener('click',function(){ if(++view.m>11){view.m=0;view.y++;} render(); });
+
+    function syncSteppers(){
+      root.querySelectorAll('[data-step]').forEach(function(btn){
+        var k=btn.getAttribute('data-step'), d=+btn.getAttribute('data-d'), v=party[k]+d, L=LIMITS[k];
+        var hard=v<L[0]||v>L[1];
+        // The 6-guest cap dims the button but keeps it tappable so tapping explains why.
+        var capped=!hard&&(k==='adults'||k==='children')&&d>0&&party.adults+party.children>=6;
+        btn.disabled=hard;
+        btn.classList.toggle('capped',capped);
+        if(capped) btn.setAttribute('aria-disabled','true'); else btn.removeAttribute('aria-disabled');
+      });
+    }
+    root.querySelectorAll('[data-step]').forEach(function(btn){
+      btn.addEventListener('click',function(){
+        if(sending)return;
+        var k=btn.getAttribute('data-step'), d=+btn.getAttribute('data-d'), v=party[k]+d, L=LIMITS[k];
+        if(v<L[0]||v>L[1])return;
+        if((k==='adults'||k==='children')&&d>0&&party.adults+party.children>=6){ note('Casa Catalina sleeps up to 6 guests.'); return; }
+        party[k]=v; root.querySelector('[data-val="'+k+'"]').textContent=v; note(''); syncSteppers();
+      });
+    });
+
+    submit.addEventListener('click',function(){
+      if(sending||!selIn||!selOut)return;
+      var name=document.getElementById('bcName').value.trim(),
+          contact=document.getElementById('bcContact').value.trim();
+      if(name.length<2){ note('Please add your name.'); document.getElementById('bcName').focus(); return; }
+      if(contact.length<5){ note('Please add a phone number or email.'); document.getElementById('bcContact').focus(); return; }
+      // Capture the range at submit time so late clicks can't change what we report.
+      var ci=selIn, co=selOut;
+      sending=true; submit.disabled=true; submit.textContent='Sending…'; note('');
+      fetch('/api/request',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+        checkIn:ci,checkOut:co,
+        adults:party.adults,children:party.children,infants:party.infants,pets:party.pets,
+        name:name,contact:contact,note:document.getElementById('bcNote').value.trim(),
+        website:document.getElementById('bcHp').value
+      })})
+      .then(function(r){ return r.json().then(function(j){ return {ok:r.ok,status:r.status,j:j}; }); })
+      .then(function(x){
+        sending=false;
+        if(x.ok){
+          var done=document.createElement('div'); done.className='bc-done';
+          var h=document.createElement('h3'); h.textContent='Request sent!';
+          var p=document.createElement('p');
+          p.textContent='Thanks '+name.split(' ')[0]+' — Thomas & Megan will confirm '+fmt(ci)+' → '+fmt(co)+' by phone or email, usually within a day.';
+          done.appendChild(h); done.appendChild(p);
+          root.textContent=''; root.appendChild(done);
+        } else {
+          note((x.j&&x.j.error)||'Something went wrong — please call or text us.');
+          update();
+          // Dates taken or rejected? Re-sync availability so the calendar shows the truth.
+          if(x.status===409||x.status===400) loadAvail(false);
+        }
+      })
+      .catch(function(){ sending=false; note('Network problem — please call or text us.'); update(); });
+    });
+  })();
 
   // lightbox — click, keyboard (Enter/Space to open, arrows to move, Esc to close), swipe; focus managed
   var lb=document.getElementById('lb'), lbimg=document.getElementById('lbimg'),

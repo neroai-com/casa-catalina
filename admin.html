@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Casa Catalina — Booking Admin</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+<style>
+  :root{
+    --canvas:#F1F0EA; --paper:#FBFAF6; --mist:#E6ECE8; --ink:#16302E; --stone:#4F625F;
+    --line:#DAD8CF; --ocean:#0F6E7A; --ocean-deep:#0A5560; --terra:#C4693D; --terra-ink:#9E4E27;
+    --brass:#B0863A; --sea:#7FA9AC;
+    --serif:'Iowan Old Style','Palatino Linotype','Palatino','Book Antiqua',Georgia,serif;
+    --sans:ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.55}
+  .wrap{max-width:760px;margin:0 auto;padding:0 max(18px,env(safe-area-inset-right)) 4rem max(18px,env(safe-area-inset-left))}
+  header{display:flex;align-items:center;gap:.7rem;padding:1.1rem 0 1rem}
+  header img{width:44px;height:44px;border-radius:50%}
+  header h1{font-family:var(--serif);font-size:1.25rem;margin:0;flex:1}
+  header h1 small{display:block;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--terra-ink);font-weight:600}
+  button{font:inherit;cursor:pointer}
+  .btn{border:0;border-radius:999px;padding:.6rem 1.15rem;font-weight:600;font-size:.9rem}
+  .btn-teal{background:var(--ocean);color:#fff}
+  .btn-teal:hover{background:var(--ocean-deep)}
+  .btn-ghost{background:transparent;border:1px solid var(--line);color:var(--stone)}
+  .btn-ghost:hover{border-color:var(--stone)}
+  .btn-terra{background:transparent;border:1px solid var(--terra);color:var(--terra-ink)}
+  .btn-terra:hover{background:var(--terra);color:#fff}
+  .btn:disabled{opacity:.5;cursor:default}
+  /* login */
+  #login{max-width:360px;margin:14vh auto 0;background:var(--paper);border:1px solid var(--line);border-radius:20px;
+    padding:2rem 1.6rem;text-align:center;box-shadow:0 18px 44px -20px rgba(16,48,46,.34)}
+  #login img{width:110px;height:110px;margin-bottom:.6rem}
+  #login h2{font-family:var(--serif);margin:.2rem 0 1.1rem;font-size:1.3rem}
+  #login input{width:100%;padding:.85rem .95rem;border:1px solid var(--line);border-radius:12px;font:inherit;background:#fff;margin-bottom:.7rem}
+  #login input:focus{outline:2px solid var(--sea)}
+  #login .btn{width:100%}
+  .err{color:var(--terra-ink);font-size:.86rem;min-height:1.2em;margin:.5rem 0 0}
+  /* dashboard */
+  #dash{display:none}
+  h2.sec{font-family:var(--serif);font-size:1.15rem;margin:1.8rem 0 .7rem;display:flex;align-items:center;gap:.5rem}
+  h2.sec .count{font-family:var(--mono);font-size:.72rem;background:var(--ocean);color:#fff;border-radius:999px;padding:.1rem .55rem}
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:1rem 1.1rem;margin-bottom:.8rem;
+    box-shadow:0 8px 22px -14px rgba(16,48,46,.25)}
+  .card .dates{font-family:var(--serif);font-weight:600;font-size:1.1rem}
+  .card .dates .n{color:var(--stone);font-weight:400;font-size:.9rem}
+  .card .meta{color:var(--stone);font-size:.9rem;margin:.25rem 0 .1rem}
+  .card .meta a{color:var(--ocean);text-decoration:none;font-weight:600}
+  .card .note{font-size:.88rem;color:var(--stone);font-style:italic;margin:.3rem 0 0}
+  .card .when{font-family:var(--mono);font-size:.68rem;color:#9BA39E;margin-top:.35rem;letter-spacing:.05em}
+  .card .acts{display:flex;gap:.5rem;margin-top:.8rem;flex-wrap:wrap}
+  .badge{display:inline-block;font-family:var(--mono);font-size:.64rem;letter-spacing:.12em;text-transform:uppercase;
+    border-radius:999px;padding:.18rem .6rem;vertical-align:2px;margin-left:.4rem}
+  .badge.pending{background:#F4E8C8;color:#7A5B12}
+  .badge.approved{background:#D9EBDD;color:#1E5B33}
+  .badge.declined{background:#F0DCD2;color:var(--terra-ink)}
+  .badge.owner{background:var(--mist);color:var(--ocean-deep)}
+  .empty{color:var(--stone);font-size:.92rem;background:var(--mist);border-radius:12px;padding:.9rem 1rem}
+  /* block form */
+  .addblock{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;background:var(--paper);border:1px solid var(--line);
+    border-radius:16px;padding:.9rem 1rem}
+  .addblock input{padding:.6rem .7rem;border:1px solid var(--line);border-radius:10px;font:inherit;background:#fff}
+  .addblock input[type=text]{flex:1;min-width:140px}
+  .addblock input:focus{outline:2px solid var(--sea)}
+  #msg{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(80px);background:var(--ink);color:#fff;
+    padding:.7rem 1.2rem;border-radius:999px;font-size:.9rem;transition:transform .3s;max-width:90vw;text-align:center}
+  #msg.show{transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div id="login">
+    <img src="images/logo-casa-catalina.png" alt="Casa Catalina">
+    <h2>Booking admin</h2>
+    <form id="loginForm">
+      <input type="password" id="pw" placeholder="Password" autocomplete="current-password" required>
+      <button class="btn btn-teal" type="submit">Sign in</button>
+    </form>
+    <p class="err" id="loginErr"></p>
+  </div>
+
+  <div id="dash">
+    <header>
+      <img src="images/logo-casa-catalina.png" alt="">
+      <h1><small>Casa Catalina</small>Booking admin</h1>
+      <button class="btn btn-ghost" id="refresh">Refresh</button>
+      <button class="btn btn-ghost" id="logout">Sign out</button>
+    </header>
+
+    <h2 class="sec">Requests <span class="count" id="pendCount">0</span></h2>
+    <div id="pending"></div>
+
+    <h2 class="sec">Upcoming stays</h2>
+    <div id="upcoming"></div>
+
+    <h2 class="sec">Blocked dates</h2>
+    <div id="blocks"></div>
+    <form class="addblock" id="blockForm">
+      <input type="date" id="bStart" required aria-label="Block start">
+      <input type="date" id="bEnd" required aria-label="Block end (checkout day)">
+      <input type="text" id="bNote" placeholder="Note (e.g. family stay)" maxlength="120">
+      <button class="btn btn-teal" type="submit">Block dates</button>
+    </form>
+  </div>
+
+</div>
+<div id="msg" role="status"></div>
+<script>
+(function(){
+  var $=function(id){ return document.getElementById(id); };
+  var MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  function fmt(s){ var p=s.split('-'); return MON[+p[1]-1]+' '+(+p[2])+', '+p[0]; }
+  function fmtShort(s){ var p=s.split('-'); return MON[+p[1]-1]+' '+(+p[2]); }
+  function nights(a,b){ return Math.round((Date.parse(b+'T00:00:00Z')-Date.parse(a+'T00:00:00Z'))/86400000); }
+  function today(){ var d=new Date(),p=function(n){return (n<10?'0':'')+n;}; return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate()); }
+  var msgT;
+  function toast(t){ var m=$('msg'); m.textContent=t; m.classList.add('show'); clearTimeout(msgT); msgT=setTimeout(function(){ m.classList.remove('show'); },3200); }
+
+  function api(path,opts){
+    opts=opts||{}; opts.headers=Object.assign({'Content-Type':'application/json'},opts.headers||{}); opts.credentials='same-origin';
+    return fetch(path,opts).then(function(r){
+      if(r.status===401){ show(false); throw new Error('unauthorized'); }
+      return r.json().then(function(j){ if(!r.ok)throw new Error(j.error||'error'); return j; });
+    });
+  }
+
+  function show(authed){ $('login').style.display=authed?'none':''; $('dash').style.display=authed?'block':'none'; }
+
+  function el(tag,cls,text){ var e=document.createElement(tag); if(cls)e.className=cls; if(text!=null)e.textContent=text; return e; }
+
+  function contactLink(c){
+    var a=el('a',null,c);
+    if(c.indexOf('@')>-1) a.href='mailto:'+c;
+    else { var d=c.replace(/[^0-9+]/g,''); if(d.length>=7) a.href='tel:'+d; else return el('span',null,c); }
+    return a;
+  }
+
+  function requestCard(r,withActs){
+    var c=el('div','card');
+    var dates=el('div','dates');
+    dates.appendChild(document.createTextNode(fmtShort(r.checkIn)+' → '+fmtShort(r.checkOut)+' '));
+    dates.appendChild(el('span','n','· '+r.nights+' night'+(r.nights>1?'s':'')));
+    dates.appendChild(el('span','badge '+r.status,r.status));
+    c.appendChild(dates);
+    var m1=el('div','meta');
+    m1.appendChild(document.createTextNode(r.name+' — '));
+    m1.appendChild(contactLink(r.contact));
+    c.appendChild(m1);
+    c.appendChild(el('div','meta',
+      r.adults+' adult'+(r.adults>1?'s':'')+
+      (r.children?', '+r.children+' child'+(r.children>1?'ren':''):'')+
+      (r.infants?', '+r.infants+' infant'+(r.infants>1?'s':''):'')+
+      (r.pets?', '+r.pets+' pet'+(r.pets>1?'s':''):'')));
+    if(r.note) c.appendChild(el('p','note','“'+r.note+'”'));
+    c.appendChild(el('div','when','requested '+new Date(r.createdAt).toLocaleString()));
+    if(withActs){
+      var acts=el('div','acts');
+      if(r.status!=='approved'){
+        var ap=el('button','btn btn-teal','Approve & block dates');
+        ap.onclick=function(){ decide(r.id,'approve',ap); }; acts.appendChild(ap);
+      }
+      if(r.status!=='declined'){
+        var de=el('button','btn btn-terra',r.status==='approved'?'Cancel & unblock':'Decline');
+        de.onclick=function(){ decide(r.id,'decline',de); }; acts.appendChild(de);
+      }
+      c.appendChild(acts);
+    }
+    return c;
+  }
+
+  function decide(id,action,btn){
+    btn.disabled=true;
+    api('/api/admin/decide',{method:'POST',body:JSON.stringify({id:id,action:action})})
+      .then(function(){ toast(action==='approve'?'Approved — dates blocked on the site.':'Updated.'); load(); })
+      .catch(function(e){ toast(e.message); btn.disabled=false; });
+  }
+
+  function load(){
+    api('/api/admin/data').then(function(d){
+      show(true);
+      var t=today();
+      var pend=d.requests.filter(function(r){ return r.status==='pending'; });
+      var recent=d.requests.filter(function(r){ return r.status!=='pending'; }).slice(0,6);
+      $('pendCount').textContent=pend.length;
+      var P=$('pending'); P.textContent='';
+      if(!pend.length) P.appendChild(el('div','empty','No pending requests — you’re all caught up.'));
+      pend.forEach(function(r){ P.appendChild(requestCard(r,true)); });
+      recent.forEach(function(r){ P.appendChild(requestCard(r,true)); });
+
+      var up=d.requests.filter(function(r){ return r.status==='approved'&&r.checkOut>=t; })
+        .sort(function(a,b){ return a.checkIn<b.checkIn?-1:1; });
+      var U=$('upcoming'); U.textContent='';
+      if(!up.length) U.appendChild(el('div','empty','No upcoming stays yet.'));
+      up.forEach(function(r){
+        var c=el('div','card');
+        var dd=el('div','dates');
+        dd.appendChild(document.createTextNode(fmt(r.checkIn)+' → '+fmt(r.checkOut)+' '));
+        dd.appendChild(el('span','n','· '+r.name));
+        c.appendChild(dd); U.appendChild(c);
+      });
+
+      var B=$('blocks'); B.textContent='';
+      if(!d.blocks.length) B.appendChild(el('div','empty','Nothing blocked — the whole calendar is open.'));
+      d.blocks.forEach(function(b){
+        var c=el('div','card');
+        var dd=el('div','dates');
+        dd.appendChild(document.createTextNode(fmtShort(b.start)+' → '+fmtShort(b.end)+' '));
+        dd.appendChild(el('span','badge '+(b.source==='owner'?'owner':'approved'),b.source==='owner'?'owner block':'booking'));
+        c.appendChild(dd);
+        if(b.note) c.appendChild(el('div','meta',b.note));
+        var acts=el('div','acts');
+        var rm=el('button','btn btn-terra','Unblock');
+        rm.onclick=function(){
+          rm.disabled=true;
+          api('/api/admin/blocks',{method:'DELETE',body:JSON.stringify({id:b.id})})
+            .then(function(){ toast('Unblocked.'); load(); })
+            .catch(function(e){ toast(e.message); rm.disabled=false; });
+        };
+        acts.appendChild(rm); c.appendChild(acts);
+        B.appendChild(c);
+      });
+    }).catch(function(){ /* 401 already routed to login */ });
+  }
+
+  $('loginForm').addEventListener('submit',function(e){
+    e.preventDefault(); $('loginErr').textContent='';
+    api('/api/admin/login',{method:'POST',body:JSON.stringify({password:$('pw').value})})
+      .then(function(){ $('pw').value=''; load(); })
+      .catch(function(e){ $('loginErr').textContent=e.message==='unauthorized'?'Wrong password.':e.message; });
+  });
+  $('logout').addEventListener('click',function(){
+    api('/api/admin/logout',{method:'POST'}).then(function(){ show(false); }).catch(function(){ show(false); });
+  });
+  $('refresh').addEventListener('click',load);
+  $('blockForm').addEventListener('submit',function(e){
+    e.preventDefault();
+    var s=$('bStart').value, en=$('bEnd').value;
+    if(!s||!en){ toast('Pick both dates.'); return; }
+    api('/api/admin/blocks',{method:'POST',body:JSON.stringify({start:s,end:en,note:$('bNote').value})})
+      .then(function(){ toast('Dates blocked.'); $('bStart').value=$('bEnd').value=$('bNote').value=''; load(); })
+      .catch(function(e){ toast(e.message); });
+  });
+
+  load();
+})();
+</script>
+</body>
+</html>

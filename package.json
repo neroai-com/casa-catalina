@@ -1,0 +1,8 @@
+{
+  "name": "casa-catalina",
+  "private": true,
+  "description": "Casa Catalina — static marketing site + serverless booking API (no build step)",
+  "scripts": {
+    "dev": "node dev-server.mjs"
+  }
+}
