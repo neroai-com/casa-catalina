@@ -80,7 +80,7 @@ http.createServer(async (req, res) => {
 }).listen(CMS_PORT, () => console.log(`[dev] CMS  http://localhost:${CMS_PORT}`));
 
 // LP server with prod-parity rewrites (slug baked in, like vercel.json)
-const LP_SLUG = 'casa-catalina';
+const LP_SLUG = process.env.LP_SLUG || '334whittley-unit1';
 const LP_REWRITES = {
   '/api/availability': 'public/[property]/availability.js',
   '/api/request': 'public/[property]/request.js',
