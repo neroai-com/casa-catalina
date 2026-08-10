@@ -23,7 +23,7 @@ module.exports = async (req, res) => {
   if (checkIn < todayLA()) return send(res, 400, { error: 'Check-in is in the past.' });
   const n = nights(checkIn, checkOut);
   if (n < 1) return send(res, 400, { error: 'Check-out must be after check-in.' });
-  if (n > MAX_NIGHTS) return send(res, 400, { error: `Stays are limited to ${MAX_NIGHTS} nights.` });
+  if (n > 365) return send(res, 400, { error: 'Stays are limited to 365 nights.' });
 
   const adults = clampInt(b.adults, 1, 12);
   const children = clampInt(b.children, 0, 10);
@@ -44,8 +44,11 @@ module.exports = async (req, res) => {
       const prop = data.properties[slug];
       if (!prop) return { save: false, status: 404, body: { error: 'unknown property' } };
 
-      // Per-property minimum stay (from CMS settings; default 1 night).
-      const minN = Math.min(MAX_NIGHTS, Math.max(1, parseInt(prop.content && prop.content.minNights, 10) || 1));
+      // Per-property stay bounds (from CMS settings; defaults 1..30 nights).
+      const maxN = Math.min(365, Math.max(1, parseInt((prop.settings || {}).maxNights, 10) || MAX_NIGHTS));
+      if (n > maxN)
+        return { save: false, status: 400, body: { error: `Stays are limited to ${maxN} nights.` } };
+      const minN = Math.min(maxN, Math.max(1, parseInt(prop.content && prop.content.minNights, 10) || 1));
       if (n < minN)
         return { save: false, status: 400, body: { error: `Minimum stay is ${minN} night${minN > 1 ? 's' : ''}.` } };
 

@@ -79,18 +79,29 @@ http.createServer(async (req, res) => {
   serveStatic('apps/cms', req, res, p);
 }).listen(CMS_PORT, () => console.log(`[dev] CMS  http://localhost:${CMS_PORT}`));
 
-// LP server with prod-parity rewrites (slug baked in, like vercel.json)
-const LP_SLUG = process.env.LP_SLUG || '334whittley-unit1';
+// LP servers with prod-parity rewrites — one port per LP app, slug parsed from
+// each app's vercel.json (8099 = casa-catalina, then 8101, 8102, ... alphabetical).
 const LP_REWRITES = {
   '/api/availability': 'public/[property]/availability.js',
   '/api/request': 'public/[property]/request.js',
   '/api/content': 'public/[property]/content.js',
 };
-http.createServer(async (req, res) => {
-  const u = new URL(req.url, `http://${req.headers.host}`);
-  const p = u.pathname;
-  if (LP_REWRITES[p]) return runApi(req, res, LP_REWRITES[p], { property: LP_SLUG });
-  const img = p.match(/^\/api\/image\/([a-f0-9]{16})$/);
-  if (img) return runApi(req, res, 'public/[property]/image.js', { property: LP_SLUG, id: img[1] });
-  serveStatic('apps/casa-catalina', req, res, p);
-}).listen(LP_PORT, () => console.log(`[dev] site http://localhost:${LP_PORT}`));
+const lpApps = fs.readdirSync(path.join(ROOT, 'apps'))
+  .filter(d => d !== 'cms' && fs.existsSync(path.join(ROOT, 'apps', d, 'vercel.json')))
+  .sort();
+let nextPort = LP_PORT + 2;
+for (const app of lpApps) {
+  const vj = JSON.parse(fs.readFileSync(path.join(ROOT, 'apps', app, 'vercel.json'), 'utf8'));
+  const m = (vj.rewrites && vj.rewrites[0] && vj.rewrites[0].destination || '').match(/\/public\/([a-z0-9-]+)\//);
+  if (!m) continue;
+  const slug = process.env.LP_SLUG && app === 'casa-catalina' ? process.env.LP_SLUG : m[1];
+  const port = app === 'casa-catalina' ? LP_PORT : nextPort++;
+  http.createServer(async (req, res) => {
+    const u = new URL(req.url, `http://${req.headers.host}`);
+    const p = u.pathname;
+    if (LP_REWRITES[p]) return runApi(req, res, LP_REWRITES[p], { property: slug });
+    const img = p.match(/^\/api\/image\/([a-f0-9]{16})$/);
+    if (img) return runApi(req, res, 'public/[property]/image.js', { property: slug, id: img[1] });
+    serveStatic('apps/' + app, req, res, p);
+  }).listen(port, () => console.log(`[dev] ${app} (${slug}) http://localhost:${port}`));
+}

@@ -1,0 +1,9 @@
+{
+  "name": "@catalina/site-unit3-penthouse",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Hilltop Penthouse (334 Whittley unit 3) landing page",
+  "scripts": {
+    "build": "echo \"static \u2014 nothing to build\""
+  }
+}

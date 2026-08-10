@@ -46,6 +46,7 @@ function sanitizeContent(input, cleanText) {
 const SETTINGS_FIELDS = {
   nightlyRate: { max: 6,   label: 'Nightly rate (USD)' },
   cleaningFee: { max: 6,   label: 'Cleaning fee (USD)' },
+  maxNights:   { max: 3,   label: 'Maximum nights (default 30)' },
   whopLink:    { max: 200, label: 'Whop checkout link' },
   lpUrl:       { max: 200, label: 'Live site URL' },
 };

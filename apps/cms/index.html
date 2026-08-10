@@ -563,7 +563,7 @@
     var st=prop().settings||{};
     var form=el('form','ed fade');
     var fs=document.createElement('fieldset'); var lg=document.createElement('legend'); lg.textContent='Billing & links'; fs.appendChild(lg);
-    var defs=[['nightlyRate','Nightly rate (USD)','number'],['cleaningFee','Cleaning fee (USD)','number'],['whopLink','Whop checkout link','url'],['lpUrl','Live site URL','url']];
+    var defs=[['nightlyRate','Nightly rate (USD)','number'],['cleaningFee','Cleaning fee (USD)','number'],['maxNights','Maximum nights (default 30)','number'],['whopLink','Whop checkout link','url'],['lpUrl','Live site URL','url']];
     var inputs={};
     defs.forEach(function(d){
       var row=el('div','row'); var lb=el('label',null,d[1]); lb.htmlFor='st_'+d[0]; row.appendChild(lb);

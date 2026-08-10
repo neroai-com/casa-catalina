@@ -1,0 +1,73 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/availability",
+      "destination": "https://catalina-rentals-cms.vercel.app/api/public/avalon-flats/availability"
+    },
+    {
+      "source": "/api/request",
+      "destination": "https://catalina-rentals-cms.vercel.app/api/public/avalon-flats/request"
+    },
+    {
+      "source": "/api/content",
+      "destination": "https://catalina-rentals-cms.vercel.app/api/public/avalon-flats/content"
+    },
+    {
+      "source": "/api/image/:id",
+      "destination": "https://catalina-rentals-cms.vercel.app/api/public/avalon-flats/image?id=:id"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        }
+      ]
+    },
+    {
+      "source": "/frames/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/videos/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/images/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400, stale-while-revalidate=604800"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        }
+      ]
+    }
+  ],
+  "outputDirectory": ".",
+  "buildCommand": null
+}
