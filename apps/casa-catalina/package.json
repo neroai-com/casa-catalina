@@ -2,5 +2,8 @@
   "name": "@catalina/site-casa-catalina",
   "version": "1.0.0",
   "private": true,
-  "description": "Casa Catalina landing page — static site, content + booking served by the CMS via /api rewrites"
+  "description": "Casa Catalina landing page \u2014 static site, content + booking served by the CMS via /api rewrites",
+  "scripts": {
+    "build": "echo \"static \u2014 nothing to build\""
+  }
 }

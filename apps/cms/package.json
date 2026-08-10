@@ -2,5 +2,8 @@
   "name": "@catalina/cms",
   "version": "1.0.0",
   "private": true,
-  "description": "Catalina Rentals CMS — owner dashboard + multi-property booking/content API (Vercel functions)"
+  "description": "Catalina Rentals CMS \u2014 owner dashboard + multi-property booking/content API (Vercel functions)",
+  "scripts": {
+    "build": "echo \"static \u2014 nothing to build\""
+  }
 }

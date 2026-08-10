@@ -1,6 +1,7 @@
 {
   "name": "catalina-rentals",
   "private": true,
+  "packageManager": "npm@10.9.2",
   "description": "Catalina Rentals — property landing pages + central booking/content CMS (no build steps, no runtime deps)",
   "workspaces": [
     "apps/*",
