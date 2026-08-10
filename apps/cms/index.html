@@ -84,9 +84,6 @@
   .brand .brandlogo{width:42px;height:42px;flex:none}
   .loginlogo{width:112px;height:112px;filter:drop-shadow(0 12px 20px rgba(16,48,46,.28))}
   .brand small{display:block;font-family:var(--mono);font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--sea);margin-bottom:.2rem}
-  .pswitch{margin:0 .3rem 1rem}
-  .pswitch select{width:100%;background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.2);color:#fff}
-  .pswitch select option{color:var(--ink)}
   nav.side{display:flex;flex-direction:column;gap:.15rem}
   nav.side button{display:flex;align-items:center;gap:.6rem;width:100%;text-align:left;background:none;border:0;color:rgba(234,240,238,.75);
     padding:.62rem .75rem;border-radius:10px;font-weight:600;font-size:.9rem;transition:background .2s,color .2s}
@@ -106,7 +103,6 @@
     .shell{flex-direction:column}
     aside{width:100%;flex-direction:row;align-items:center;flex-wrap:wrap;gap:.4rem;padding:.7rem .8rem}
     .brand{padding:.1rem .4rem;font-size:1rem;flex:1}
-    .pswitch{margin:0;order:3;width:100%}
     nav.side{flex-direction:row;overflow-x:auto;order:4;width:100%;padding:.3rem 0 .1rem;scrollbar-width:none}
     nav.side button{white-space:nowrap;padding:.5rem .7rem;font-size:.82rem}
     .sidefoot{margin:0;flex-direction:row;order:2}
@@ -196,6 +192,41 @@
   .upbar select{font-size:.85rem;padding:.45rem .6rem}
   .upprog{font-size:.8rem;color:var(--stone);margin-bottom:.8rem;min-height:1.2em}
 
+  /* master filter chips + fleet table */
+  .pfbar{display:flex;flex-wrap:wrap;gap:.45rem;margin-bottom:1.1rem}
+  .pfbar button{display:inline-flex;align-items:center;gap:.45rem;border:1px solid var(--line);background:var(--paper);
+    border-radius:999px;padding:.42rem .85rem;font-size:.82rem;font-weight:600;color:var(--stone);transition:border-color .2s,background .2s}
+  .pfbar button:hover{border-color:var(--stone)}
+  .pfbar button.on{border-color:var(--ink);background:var(--ink);color:#fff}
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block;flex:none;font-style:normal}
+  .fleetwrap{background:var(--paper);border:1px solid var(--line);border-radius:16px;overflow-x:auto;margin-bottom:1.4rem}
+  .fleet{width:100%;border-collapse:collapse;min-width:560px}
+  .fleet th{font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--stone);text-align:left;padding:.7rem .9rem .5rem}
+  .fleet td{padding:.55rem .9rem;border-top:1px solid var(--line);font-size:.88rem}
+  .fleet tr[data-p]{cursor:pointer}
+  .fleet tr[data-p]:hover td{background:var(--mist)}
+  .fleet .pn{display:inline-flex;align-items:center;gap:.5rem;font-weight:600}
+  .pchip{display:inline-flex;align-items:center;gap:.4rem;font-size:.74rem;color:var(--stone);font-weight:600;margin-left:.35rem}
+
+  /* master calendar property bars */
+  .calgrid .d{flex-direction:column;gap:1px;padding-top:.2rem}
+  .calgrid .d .bars{display:flex;flex-direction:column;gap:2px;width:74%}
+  .calgrid .d .pb{height:4px;border-radius:2px;display:block}
+  .calgrid .d .pb.own{opacity:.5}
+  .calgrid .d .pbmore{font-size:.5rem;line-height:1;color:var(--stone);font-style:normal;text-align:center}
+
+  /* staged uploads */
+  .stagewrap{background:var(--paper);border:1.5px solid var(--ocean);border-radius:16px;padding:1rem 1.1rem;margin-bottom:1.2rem}
+  .stagehead{display:flex;align-items:center;justify-content:space-between;gap:.8rem;flex-wrap:wrap;margin-bottom:.8rem}
+  .stagehead h3{margin:0;font-family:var(--serif);font-size:1.05rem}
+  .stagegrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:.8rem}
+  .stagecard{background:var(--canvas);border:1px solid var(--line);border-radius:12px;overflow:hidden;position:relative}
+  .stagecard img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:var(--mist)}
+  .stagecard input,.stagecard select{width:calc(100% - .8rem);margin:.4rem .4rem 0;font-size:.74rem;padding:.32rem .45rem;border-radius:8px}
+  .stagecard .fin{margin-bottom:.45rem}
+  .stagecard .del{position:absolute;top:6px;right:6px;width:28px;height:28px;border-radius:50%;border:0;background:rgba(16,48,46,.72);color:#fff;line-height:1}
+  .foldbtn{background:none;border:0;color:var(--ocean-deep);font-size:.72rem;padding:0 .55rem .5rem;text-decoration:underline;cursor:pointer;display:block;text-align:left}
+
   #msg{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(90px);background:var(--ink);color:#fff;
     padding:.7rem 1.2rem;border-radius:999px;font-size:.9rem;transition:transform .3s var(--ease);max-width:92vw;text-align:center;z-index:9}
   #msg.show{transform:translateX(-50%) translateY(0)}
@@ -238,7 +269,6 @@
   <div class="shell">
     <aside>
       <div class="brand"><img class="brandlogo" src="images/logo-casa-catalina.png" alt="" width="42" height="42"><span><small>Catalina Rentals</small>Property Manager</span></div>
-      <div class="pswitch"><select id="psel" aria-label="Property"></select></div>
       <nav class="side" id="nav"></nav>
       <div class="sidefoot">
         <button class="btn" id="addProp">+ Add property</button>
@@ -265,7 +295,8 @@
   window.addEventListener('pageshow',function(e){ if(e.persisted)location.reload(); });
   var msgT; function toast(t){ var m=$('msg'); m.textContent=t; m.classList.add('show'); clearTimeout(msgT); msgT=setTimeout(function(){ m.classList.remove('show'); },3200); }
 
-  var S={ props:{}, requests:[], blocks:[], fields:{}, cur:null, view:'overview', calY:null, calM:null };
+  var S={ props:{}, requests:[], blocks:[], fields:{}, filter:null, cur:null, view:'overview', calY:null, calM:null,
+    stage:[], uploading:false, upCat:'additional photos', upFolder:'', folderFilter:null };
 
   function api(path,opts){
     opts=opts||{}; opts.headers=Object.assign({'Content-Type':'application/json'},opts.headers||{}); opts.credentials='same-origin';
@@ -278,21 +309,53 @@
     $('pwToggle').setAttribute('aria-pressed','false'); $('pwSlash').style.display='none'; }
   function show(a){ if(!a)resetPwReveal(); $('login').style.display=a?'none':''; $('app').style.display=a?'block':'none'; }
   function prop(){ return S.props[S.cur]||null; }
-  function myReqs(){ return S.requests.filter(function(r){ return r.property===S.cur; }); }
-  function myBlocks(){ return S.blocks.filter(function(b){ return b.property===S.cur; }); }
+  function slugsSorted(){ return Object.keys(S.props).sort(); }
+  // S.filter is the master selection (null = all properties); S.cur is the
+  // effective single property for per-property views (editor/images/settings).
+  function sync(){
+    var prev=S.cur;
+    if(S.filter&&!S.props[S.filter])S.filter=null;
+    S.cur=S.filter||slugsSorted()[0]||null;
+    if(prev&&S.cur!==prev){
+      S.folderFilter=null;
+      if(S.stage.length&&!S.uploading){ S.stage=[]; toast('Staged photos cleared — property changed.'); }
+    }
+  }
+  function fReqs(){ return S.filter?S.requests.filter(function(r){ return r.property===S.filter; }):S.requests; }
+  function fBlocks(){ return S.filter?S.blocks.filter(function(b){ return b.property===S.filter; }):S.blocks; }
+  function pBlocks(slug){ return S.blocks.filter(function(b){ return b.property===slug; }); }
+  var PCOLORS=['#0F6E7A','#C4693D','#B0863A','#1E5B33','#5B4E8C','#8C2F4E','#3E7CB1','#A64AC9'];
+  function pcolor(slug){ var i=slugsSorted().indexOf(slug); return PCOLORS[(i<0?0:i)%PCOLORS.length]; }
+  function pname(slug){ return (S.props[slug]&&S.props[slug].name)||slug; }
+  function dot(slug){ var i=el('i','dot'); i.style.background=pcolor(slug); return i; }
+  function pchip(slug){ var sp=el('span','pchip'); sp.appendChild(dot(slug)); sp.appendChild(document.createTextNode(pname(slug))); return sp; }
+  function filterBar(allowAll){
+    var bar=el('div','pfbar');
+    function chip(label,slug,on){
+      var b=el('button',on?'on':'');
+      if(slug)b.appendChild(dot(slug));
+      b.appendChild(document.createTextNode(label));
+      b.setAttribute('data-pfilter',slug||'all');
+      b.onclick=function(){ S.filter=slug||null; sync(); S.calY=null; S.folderFilter=null; renderNav(); renderView(); };
+      return b;
+    }
+    if(allowAll)bar.appendChild(chip('All properties',null,!S.filter));
+    slugsSorted().forEach(function(k){ bar.appendChild(chip(pname(k),k,allowAll?S.filter===k:S.cur===k)); });
+    return bar;
+  }
 
   // ---------- occupancy / revenue ----------
   function nightsInMonth(y,m){ return new Date(y,m+1,0).getDate(); }
-  function bookedNights(y,m,sourceFilter){
+  function bookedNights(y,m,sourceFilter,blocks){
     var count=0, days=nightsInMonth(y,m);
     for(var d=1;d<=days;d++){
       var ds=y+'-'+p2(m+1)+'-'+p2(d);
-      var hit=myBlocks().some(function(b){ return (!sourceFilter||b.source===sourceFilter)&&ds>=b.start&&ds<b.end; });
+      var hit=blocks.some(function(b){ return (!sourceFilter||b.source===sourceFilter)&&ds>=b.start&&ds<b.end; });
       if(hit)count++;
     }
     return count;
   }
-  function occupancy(y,m){ return Math.round(100*bookedNights(y,m)/nightsInMonth(y,m)); }
+  function occupancy(y,m,blocks){ return Math.round(100*bookedNights(y,m,null,blocks)/nightsInMonth(y,m)); }
 
   // ---------- nav / views ----------
   var VIEWS=[['overview','Overview'],['requests','Requests'],['calendar','Calendar'],['editor','Site editor'],['images','Images'],['settings','Settings']];
@@ -301,18 +364,11 @@
     VIEWS.forEach(function(v){
       var b=el('button',S.view===v[0]?'on':'',v[1]);
       if(v[0]==='requests'){
-        var pend=myReqs().filter(function(r){return r.status==='pending';}).length;
+        var pend=S.requests.filter(function(r){return r.status==='pending';}).length;
         if(pend) b.textContent=v[1]+' ('+pend+')';
       }
       b.onclick=function(){ S.view=v[0]; renderNav(); renderView(); };
       n.appendChild(b);
-    });
-  }
-  function renderSwitcher(){
-    var sel=$('psel'); sel.textContent='';
-    Object.keys(S.props).sort().forEach(function(k){
-      var o=document.createElement('option'); o.value=k; o.textContent=S.props[k].name||k;
-      if(k===S.cur)o.selected=true; sel.appendChild(o);
     });
   }
   function vhead(title,sub){
@@ -325,29 +381,61 @@
   // ---------- Overview ----------
   function viewOverview(m){
     var now=new Date(), y=now.getFullYear(), mo=now.getMonth();
-    var rate=parseFloat((prop().settings||{}).nightlyRate)||0;
-    var bookedThis=bookedNights(y,mo,'approval');
-    m.appendChild(vhead(prop().name, el('span',null,'Overview — '+MONTHS[mo]+' '+y)));
+    var ny=mo===11?y+1:y, nm=(mo+1)%12;
+    var list=S.filter?[S.filter]:slugsSorted();
+    m.appendChild(vhead(S.filter?pname(S.filter):'All properties',
+      el('span',null,'Overview — '+MONTHS[mo]+' '+y+(S.filter?'':' · '+list.length+' properties'))));
+    m.appendChild(filterBar(true));
+    var totBooked=0, totRev=0, totPend=0, occT=0, occN=0, hasRate=false;
+    list.forEach(function(k){
+      var bl=pBlocks(k), rate=parseFloat((S.props[k].settings||{}).nightlyRate)||0;
+      var bn=bookedNights(y,mo,'approval',bl);
+      totBooked+=bn; if(rate>0){ totRev+=bn*rate; hasRate=true; }
+      occT+=occupancy(y,mo,bl); occN+=occupancy(ny,nm,bl);
+      totPend+=S.requests.filter(function(r){ return r.property===k&&r.status==='pending'; }).length;
+    });
+    var n=list.length||1;
     var tiles=el('div','tiles');
     function tile(k,v,accent){ var t=el('div','tile'+(accent?' accent':'')); t.appendChild(el('div','k',k)); var vv=el('div','v'); vv.textContent=v; t.appendChild(vv); return t; }
-    tiles.appendChild(tile('Occupancy · '+MON[mo],occupancy(y,mo)+'%',true));
-    var ny=mo===11?y+1:y, nm=(mo+1)%12;
-    tiles.appendChild(tile('Occupancy · '+MON[nm],occupancy(ny,nm)+'%'));
-    tiles.appendChild(tile('Pending requests',String(myReqs().filter(function(r){return r.status==='pending';}).length)));
-    tiles.appendChild(tile('Booked nights · '+MON[mo],String(bookedThis)));
-    tiles.appendChild(tile('Est. revenue · '+MON[mo],rate>0?money(bookedThis*rate):'—'));
+    tiles.appendChild(tile('Occupancy · '+MON[mo],Math.round(occT/n)+'%',true));
+    tiles.appendChild(tile('Occupancy · '+MON[nm],Math.round(occN/n)+'%'));
+    tiles.appendChild(tile('Pending requests',String(totPend)));
+    tiles.appendChild(tile('Booked nights · '+MON[mo],String(totBooked)));
+    tiles.appendChild(tile('Est. revenue · '+MON[mo],hasRate?money(totRev):'—'));
     m.appendChild(tiles);
+
+    if(!S.filter&&list.length>1){
+      m.appendChild(el('h3','sec','Fleet'));
+      var fw=el('div','fleetwrap fade'), tb=document.createElement('table'); tb.className='fleet';
+      var tr0=document.createElement('tr');
+      ['Property','Occ · '+MON[mo],'Occ · '+MON[nm],'Nights · '+MON[mo],'Revenue · '+MON[mo],'Pending'].forEach(function(hh){
+        var th=document.createElement('th'); th.textContent=hh; tr0.appendChild(th); });
+      tb.appendChild(tr0);
+      list.forEach(function(k){
+        var bl=pBlocks(k), rate=parseFloat((S.props[k].settings||{}).nightlyRate)||0, bn=bookedNights(y,mo,'approval',bl);
+        var tr=document.createElement('tr'); tr.setAttribute('data-p',k);
+        var td0=document.createElement('td'); var pn=el('span','pn'); pn.appendChild(dot(k));
+        pn.appendChild(document.createTextNode(pname(k))); td0.appendChild(pn); tr.appendChild(td0);
+        [occupancy(y,mo,bl)+'%',occupancy(ny,nm,bl)+'%',String(bn),rate>0?money(bn*rate):'—',
+         String(S.requests.filter(function(r){ return r.property===k&&r.status==='pending'; }).length)]
+          .forEach(function(v){ var td=document.createElement('td'); td.textContent=v; tr.appendChild(td); });
+        tr.onclick=function(){ S.filter=k; sync(); renderNav(); renderView(); };
+        tb.appendChild(tr);
+      });
+      fw.appendChild(tb); m.appendChild(fw);
+    }
 
     m.appendChild(el('h3','sec','Next arrivals'));
     var t=todayISO();
-    var up=myReqs().filter(function(r){return r.status==='approved'&&r.checkOut>=t;})
-      .sort(function(a,b){return a.checkIn<b.checkIn?-1:1;}).slice(0,6);
+    var up=fReqs().filter(function(r){return r.status==='approved'&&r.checkOut>=t;})
+      .sort(function(a,b){return a.checkIn<b.checkIn?-1:1;}).slice(0,8);
     if(!up.length)m.appendChild(el('div','empty','No upcoming stays yet — approved requests appear here.'));
     up.forEach(function(r){
       var c=el('div','card rq fade'); var d=el('div','dates');
       d.appendChild(document.createTextNode(fmtL(r.checkIn)+' → '+fmtL(r.checkOut)+' · '+r.name+' '));
       if(r.payment)d.appendChild(el('span','badge paid','paid '+money(r.payment.amount)));
       else if(r.quote)d.appendChild(el('span','badge unpaid','unpaid'));
+      if(!S.filter)d.appendChild(pchip(r.property));
       c.appendChild(d); m.appendChild(c);
     });
   }
@@ -365,6 +453,7 @@
     d.appendChild(document.createTextNode(fmtS(r.checkIn)+' → '+fmtS(r.checkOut)+' · '+r.nights+' night'+(r.nights>1?'s':'')+' '));
     d.appendChild(el('span','badge '+r.status,r.status));
     if(r.payment)d.appendChild(el('span','badge paid','paid · '+r.payment.method));
+    d.appendChild(pchip(r.property));
     c.appendChild(d);
     var m1=el('div','meta'); m1.appendChild(document.createTextNode(r.name+' — ')); m1.appendChild(contactLink(r.contact)); c.appendChild(m1);
     c.appendChild(el('div','meta',r.adults+' adults'+(r.children?', '+r.children+' children':'')+(r.infants?', '+r.infants+' infants':'')+(r.pets?', '+r.pets+' pets':'')));
@@ -397,7 +486,7 @@
           .catch(function(e){ toast(e.message); de.disabled=false; }); };
       acts.appendChild(de);
     }
-    var whop=(prop().settings||{}).whopLink;
+    var whop=(((S.props[r.property]||{}).settings)||{}).whopLink;
     if(r.status==='approved'&&!r.payment&&whop){
       var wa=el('a','btn btn-ghost','Whop checkout ↗'); wa.href=whop; wa.target='_blank'; wa.rel='noopener';
       acts.appendChild(wa);
@@ -432,18 +521,21 @@
     return f;
   }
   function viewRequests(m){
-    m.appendChild(vhead('Requests', el('span',null,'Approve to block dates instantly on the live site')));
-    var pend=myReqs().filter(function(r){return r.status==='pending';});
-    var rest=myReqs().filter(function(r){return r.status!=='pending';});
-    if(!pend.length&&!rest.length)m.appendChild(el('div','empty','No requests yet for this property.'));
+    m.appendChild(vhead('Requests', el('span',null,(S.filter?pname(S.filter):'All properties')+' — approve to block dates instantly on the live site')));
+    m.appendChild(filterBar(true));
+    var pend=fReqs().filter(function(r){return r.status==='pending';});
+    var rest=fReqs().filter(function(r){return r.status!=='pending';});
+    if(!pend.length&&!rest.length)m.appendChild(el('div','empty','No requests yet.'));
     pend.forEach(function(r){ m.appendChild(requestCard(r)); });
-    if(rest.length){ m.appendChild(el('h3','sec','Handled')); rest.slice(0,10).forEach(function(r){ m.appendChild(requestCard(r)); }); }
+    if(rest.length){ m.appendChild(el('h3','sec','Handled')); rest.slice(0,20).forEach(function(r){ m.appendChild(requestCard(r)); }); }
   }
 
   // ---------- Calendar ----------
   function viewCalendar(m){
     if(S.calY===null){ var n=new Date(); S.calY=n.getFullYear(); S.calM=n.getMonth(); }
-    m.appendChild(vhead('Calendar', el('span',null,'Teal = guest bookings · Gold = owner blocks')));
+    m.appendChild(vhead('Calendar', el('span',null,S.filter?pname(S.filter):'Master calendar — every property, color-coded')));
+    m.appendChild(filterBar(true));
+    var list=S.filter?[S.filter]:slugsSorted();
     var wrap=el('div','calwrap fade');
     var head=el('div','calhead');
     var pb=el('button',null,'‹'); pb.setAttribute('aria-label','Previous month');
@@ -458,36 +550,52 @@
     for(var i=0;i<first;i++)grid.appendChild(el('div','d pad','·'));
     for(var d=1;d<=days;d++){
       var ds=S.calY+'-'+p2(S.calM+1)+'-'+p2(d);
-      var cell=el('div','d',String(d));
-      var blk=myBlocks().find(function(b){ return ds>=b.start&&ds<b.end; });
-      if(blk)cell.classList.add(blk.source==='owner'?'ownerblk':'booked');
+      var cell=el('div','d'); cell.appendChild(el('span',null,String(d)));
+      var bars=el('div','bars'), titles=[], shown=0;
+      list.forEach(function(k){
+        var blk=pBlocks(k).find(function(b){ return ds>=b.start&&ds<b.end; });
+        if(!blk)return;
+        if(shown<4){
+          var bar=el('i','pb'+(blk.source==='owner'?' own':'')); bar.style.background=pcolor(k);
+          bars.appendChild(bar);
+        }
+        shown++;
+        titles.push(pname(k)+': '+(blk.source==='owner'?(blk.note||'owner block'):'booked'));
+      });
+      if(shown>4)bars.appendChild(el('i','pbmore','+'+(shown-4)));
+      if(titles.length){ cell.appendChild(bars); cell.title=titles.join(' · '); }
       if(ds<t)cell.classList.add('past');
       if(ds===t)cell.classList.add('today');
-      if(blk){ var who=blk.source==='owner'?(blk.note||'Owner block'):'Booked'; cell.title=who+' · '+fmtS(blk.start)+' → '+fmtS(blk.end); }
       grid.appendChild(cell);
     }
     wrap.appendChild(grid);
     var lg=el('div','callegend');
-    var l1=el('span'); var i1=el('i'); i1.style.background='var(--ocean)'; l1.appendChild(i1); l1.appendChild(document.createTextNode('Guest booking')); lg.appendChild(l1);
-    var l2=el('span'); var i2=el('i'); i2.style.background='var(--brass)'; l2.appendChild(i2); l2.appendChild(document.createTextNode('Owner block')); lg.appendChild(l2);
+    var l1=el('span',null,'Bar color = property · solid = booking · faded = owner block');
+    lg.appendChild(l1);
     wrap.appendChild(lg);
     m.appendChild(wrap);
 
     m.appendChild(el('h3','sec','Block dates'));
     var f=el('div','payform');
+    var bp=null;
+    if(!S.filter){
+      bp=document.createElement('select'); bp.setAttribute('aria-label','Property');
+      slugsSorted().forEach(function(k){ var o=document.createElement('option'); o.value=k; o.textContent=pname(k); bp.appendChild(o); });
+      f.appendChild(bp);
+    }
     var bs=document.createElement('input'); bs.type='date'; bs.setAttribute('aria-label','Start');
     var be=document.createElement('input'); be.type='date'; be.setAttribute('aria-label','End (checkout day)');
     var bn=document.createElement('input'); bn.className='ref'; bn.placeholder='Note (e.g. maintenance)'; bn.maxLength=120;
     var bb=el('button','btn btn-teal','Block');
     bb.onclick=function(){
       if(!bs.value||!be.value){ toast('Pick both dates.'); return; }
-      api('/api/admin/blocks',{method:'POST',body:JSON.stringify({property:S.cur,start:bs.value,end:be.value,note:bn.value})})
+      api('/api/admin/blocks',{method:'POST',body:JSON.stringify({property:bp?bp.value:S.filter,start:bs.value,end:be.value,note:bn.value})})
         .then(function(){ toast('Dates blocked.'); load(); }).catch(function(e){ toast(e.message); });
     };
     f.appendChild(bs); f.appendChild(be); f.appendChild(bn); f.appendChild(bb);
     m.appendChild(f);
 
-    var blocks=myBlocks();
+    var blocks=fBlocks();
     if(blocks.length){
       m.appendChild(el('h3','sec','All blocks'));
       blocks.forEach(function(b){
@@ -495,6 +603,7 @@
         var d=el('div','dates');
         d.appendChild(document.createTextNode(fmtL(b.start)+' → '+fmtL(b.end)+' '));
         d.appendChild(el('span','badge '+(b.source==='owner'?'owner':'approved'),b.source==='owner'?'owner block':'booking'));
+        d.appendChild(pchip(b.property));
         c.appendChild(d);
         if(b.note)c.appendChild(el('div','meta',b.note));
         var acts=el('div','acts');
@@ -520,7 +629,8 @@
     var sub=el('span');
     sub.appendChild(document.createTextNode('Edits go live the moment you save. '));
     if(lp){ var a=el('a',null,'Open live site ↗'); a.href=lp; a.target='_blank'; a.rel='noopener'; sub.appendChild(a); }
-    m.appendChild(vhead('Site editor',sub));
+    m.appendChild(vhead('Site editor — '+pname(S.cur),sub));
+    m.appendChild(filterBar(false));
     var form=el('form','ed fade'); var inputs={};
     var content=prop().content||{};
     GROUPS.forEach(function(g){
@@ -580,44 +690,132 @@
     s.value=IMG_CATS.indexOf(value)>=0?value:'additional photos';
     return s;
   }
+  function propFolders(){
+    var out=[], seen={};
+    ((prop()||{}).images||[]).forEach(function(im){ var f=im.folder||''; if(f&&!seen[f]){ seen[f]=1; out.push(f); } });
+    return out.sort();
+  }
   function viewImages(m){
-    m.appendChild(vhead('Images', el('span',null,'Give each photo a category — the live site places it in the matching spot (bedrooms, kitchen, exterior…).')));
+    m.appendChild(vhead('Images — '+pname(S.cur),
+      el('span',null,'Stage photos, set each one\u2019s category and folder, then confirm. The live site places photos by category.')));
+    m.appendChild(filterBar(false));
     var prog=el('div','upprog'); prog.id='upProg';
     var upbar=el('div','upbar');
-    var ulab=el('label',null,'New uploads go to'); ulab.htmlFor='upCat';
+    var ulab=el('label',null,'New photos start as'); ulab.htmlFor='upCat';
     var usel=catSelect(S.upCat||'additional photos'); usel.id='upCat';
     usel.onchange=function(){ S.upCat=usel.value; };
-    upbar.appendChild(ulab); upbar.appendChild(usel);
+    var flab=el('label',null,'in folder'); flab.htmlFor='upFolder';
+    var fin=document.createElement('input'); fin.id='upFolder'; fin.placeholder='(no folder)'; fin.maxLength=40;
+    fin.value=S.upFolder||''; fin.setAttribute('list','folderlist');
+    fin.onchange=function(){ S.upFolder=fin.value; };
+    upbar.appendChild(ulab); upbar.appendChild(usel); upbar.appendChild(flab); upbar.appendChild(fin);
     m.appendChild(upbar);
+    var dl=document.createElement('datalist'); dl.id='folderlist';
+    propFolders().forEach(function(f){ var o=document.createElement('option'); o.value=f; dl.appendChild(o); });
+    m.appendChild(dl);
     var drop=el('div','drop');
     drop.appendChild(el('div',null,'Drop photos here or '));
-    var b=el('b',null,'browse to upload'); drop.firstChild.appendChild(b);
-    drop.appendChild(el('div','hint','JPEG/PNG/HEIC-as-JPEG · auto-compressed to web size'));
+    var b=el('b',null,'browse to stage them'); drop.firstChild.appendChild(b);
+    drop.appendChild(el('div','hint','Nothing uploads until you confirm — review categories and folders first'));
     var fi=document.createElement('input'); fi.type='file'; fi.accept='image/*'; fi.multiple=true; fi.style.display='none';
     drop.appendChild(fi);
     drop.onclick=function(){ fi.click(); };
     drop.ondragover=function(e){ e.preventDefault(); drop.classList.add('over'); };
     drop.ondragleave=function(){ drop.classList.remove('over'); };
-    drop.ondrop=function(e){ e.preventDefault(); drop.classList.remove('over'); upload([].slice.call(e.dataTransfer.files)); };
-    fi.onchange=function(){ upload([].slice.call(fi.files)); fi.value=''; };
+    drop.ondrop=function(e){ e.preventDefault(); drop.classList.remove('over'); stageFiles([].slice.call(e.dataTransfer.files)); };
+    fi.onchange=function(){ stageFiles([].slice.call(fi.files)); fi.value=''; };
     m.appendChild(drop); m.appendChild(prog);
 
-    function upload(files){
+    function stageFiles(files){
+      if(S.uploading){ toast('Wait for the current upload to finish.'); return; }
       files=files.filter(function(f){ return /^image\//.test(f.type); });
       if(!files.length)return;
-      var done=0;
-      (function next(){
-        if(done>=files.length){ prog.textContent='Uploaded '+done+' image'+(done>1?'s':'')+'.'; load(); return; }
-        prog.textContent='Uploading '+(done+1)+' of '+files.length+'…';
-        downscale(files[done])
-          .then(function(dataUrl){ return api('/api/admin/images',{method:'POST',body:JSON.stringify({slug:S.cur,dataUrl:dataUrl,category:usel.value,caption:files[done].name.replace(/\.[^.]+$/,'')})}); })
-          .then(function(){ done++; next(); })
-          .catch(function(e){ prog.textContent='Upload failed: '+e.message; });
+      var cap=24-(((prop()||{}).images)||[]).length-S.stage.length;
+      if(files.length>cap){
+        toast('Limit is 24 photos per property'+(cap>0?' — staging the first '+cap+'.':'.'));
+        files=files.slice(0,Math.max(0,cap));
+      }
+      if(!files.length)return;
+      prog.textContent='Preparing '+files.length+' photo'+(files.length>1?'s':'')+'\u2026';
+      var stagedFor=S.cur, i=0;
+      (function one(){
+        if(i>=files.length||S.cur!==stagedFor){ if(S.view==='images'&&S.cur===stagedFor)renderView(); return; }
+        var f=files[i++];
+        downscale(f)
+          .then(function(dataUrl){
+            if(S.cur!==stagedFor)return; // property changed mid-decode — drop, don't misfile
+            S.stage.push({dataUrl:dataUrl,caption:f.name.replace(/\.[^.]+$/,''),category:S.upCat||'additional photos',folder:S.upFolder||''});
+          })
+          .catch(function(){ toast('Could not read '+f.name+'.'); })
+          .then(one);
       })();
     }
 
+    if(S.stage.length){
+      var w=el('div','stagewrap fade');
+      var h=el('div','stagehead');
+      h.appendChild(el('h3',null,'Ready to upload \u00b7 '+S.stage.length+' photo'+(S.stage.length>1?'s':'')));
+      var btns=el('div');
+      var go=el('button','btn btn-teal','Upload '+S.stage.length+' photo'+(S.stage.length>1?'s':'')); go.id='stageGo';
+      var cl=el('button','btn btn-ghost','Clear'); cl.id='stageClear'; cl.style.marginLeft='.5rem';
+      cl.onclick=function(){ if(S.uploading)return; S.stage=[]; renderView(); };
+      btns.appendChild(go); btns.appendChild(cl); h.appendChild(btns); w.appendChild(h);
+      var g=el('div','stagegrid');
+      S.stage.forEach(function(st,i){
+        var c=el('div','stagecard');
+        var img=document.createElement('img'); img.src=st.dataUrl; img.alt=''; c.appendChild(img);
+        var cap=document.createElement('input'); cap.value=st.caption; cap.maxLength=120; cap.placeholder='Caption';
+        cap.setAttribute('aria-label','Caption'); cap.oninput=function(){ st.caption=cap.value; }; c.appendChild(cap);
+        var cs=catSelect(st.category); cs.setAttribute('aria-label','Category');
+        cs.onchange=function(){ st.category=cs.value; }; c.appendChild(cs);
+        var fo=document.createElement('input'); fo.className='fin'; fo.value=st.folder; fo.maxLength=40; fo.placeholder='Folder (optional)';
+        fo.setAttribute('list','folderlist'); fo.setAttribute('aria-label','Folder'); fo.oninput=function(){ st.folder=fo.value; }; c.appendChild(fo);
+        var x=el('button','del','\u00d7'); x.setAttribute('aria-label','Remove from upload');
+        x.onclick=function(){
+          if(S.uploading)return;
+          var idx=S.stage.indexOf(st); if(idx>-1)S.stage.splice(idx,1);
+          renderView();
+        }; c.appendChild(x);
+        g.appendChild(c);
+      });
+      w.appendChild(g);
+      go.onclick=function(){
+        if(S.uploading)return;
+        S.uploading=true; go.disabled=true; cl.disabled=true;
+        var done=0, total=S.stage.length, pr=$('upProg'), slug=S.cur;
+        (function next(){
+          if(!S.stage.length){ S.uploading=false; if(pr)pr.textContent=''; toast('Uploaded '+done+' photo'+(done!==1?'s':'')+'.'); load(); return; }
+          if(pr)pr.textContent='Uploading '+(done+1)+' of '+total+'\u2026';
+          var st=S.stage[0];
+          api('/api/admin/images',{method:'POST',body:JSON.stringify({slug:slug,dataUrl:st.dataUrl,category:st.category,folder:st.folder,caption:st.caption})})
+            .then(function(){ S.stage.shift(); done++; next(); })
+            .catch(function(e){ S.uploading=false; if(pr)pr.textContent='Upload stopped at photo '+(done+1)+': '+e.message+' \u2014 already-uploaded photos are saved.'; go.disabled=false; cl.disabled=false; });
+        })();
+      };
+      m.appendChild(w);
+    }
+
     var imgs=prop().images||[];
-    if(!imgs.length){ m.appendChild(el('div','empty','No images yet — the site is using its built-in photos until you upload.')); return; }
+    if(!imgs.length){ if(!S.stage.length)m.appendChild(el('div','empty','No images yet — the site is using its built-in photos until you upload.')); return; }
+    var fl=propFolders();
+    if(S.folderFilter!=null&&S.folderFilter!==''&&fl.indexOf(S.folderFilter)<0)S.folderFilter=null;
+    if(S.folderFilter===''&&!imgs.some(function(im){ return !im.folder; }))S.folderFilter=null;
+    if(fl.length){
+      var fb=el('div','pfbar');
+      var hasUnfiled=imgs.some(function(im){ return !im.folder; });
+      function fchip(label,val){
+        var bb=el('button',(S.folderFilter===val)?'on':'',label);
+        bb.setAttribute('data-folder',val===null?'all':(val||'unfiled'));
+        bb.onclick=function(){ S.folderFilter=val; renderView(); };
+        return bb;
+      }
+      fb.appendChild(fchip('All photos',null));
+      fl.forEach(function(f){ fb.appendChild(fchip('\ud83d\udcc1 '+f,f)); });
+      if(hasUnfiled)fb.appendChild(fchip('Unfiled',''));
+      m.appendChild(fb);
+    }
+    var vis=(S.folderFilter==null)?imgs:imgs.filter(function(im){ return (im.folder||'')===S.folderFilter; });
+    if(!vis.length){ m.appendChild(el('div','empty','No photos in this folder.')); return; }
     function card(im){
       var c=el('div','imcard fade');
       var img=document.createElement('img'); img.loading='lazy'; img.src=imgUrl(im.id); img.alt=im.caption||'';
@@ -629,7 +827,15 @@
           .then(function(){ toast('Moved to '+catLabel(csel.value)+'.'); load(); }).catch(function(e){ toast(e.message); load(); });
       };
       c.appendChild(csel);
-      var del=el('button','del','×'); del.setAttribute('aria-label','Delete image');
+      var fbn=el('button','foldbtn','\ud83d\udcc1 '+(im.folder||'No folder'));
+      fbn.onclick=function(){
+        var nv=prompt('Folder for this photo (leave empty for none):',im.folder||'');
+        if(nv===null)return;
+        api('/api/admin/images',{method:'PATCH',body:JSON.stringify({slug:S.cur,id:im.id,folder:nv})})
+          .then(function(){ toast(nv?'Moved to folder \u201c'+nv+'\u201d.':'Removed from folder.'); load(); }).catch(function(e){ toast(e.message); });
+      };
+      c.appendChild(fbn);
+      var del=el('button','del','\u00d7'); del.setAttribute('aria-label','Delete image');
       del.onclick=function(){
         if(!confirm('Delete this image?'))return;
         api('/api/admin/images',{method:'DELETE',body:JSON.stringify({slug:S.cur,id:im.id})})
@@ -639,10 +845,10 @@
       return c;
     }
     IMG_CATS.forEach(function(cat){
-      var mine=imgs.filter(function(im){ return (IMG_CATS.indexOf(im.category)>=0?im.category:'additional photos')===cat; });
+      var mine=vis.filter(function(im){ return (IMG_CATS.indexOf(im.category)>=0?im.category:'additional photos')===cat; });
       if(!mine.length)return;
-      var h=el('h3','imcat',catLabel(cat)); h.appendChild(el('small',null,mine.length+(mine.length>1?' photos':' photo')));
-      m.appendChild(h);
+      var h2=el('h3','imcat',catLabel(cat)); h2.appendChild(el('small',null,mine.length+(mine.length>1?' photos':' photo')));
+      m.appendChild(h2);
       var grid=el('div','imgrid');
       mine.forEach(function(im){ grid.appendChild(card(im)); });
       m.appendChild(grid);
@@ -651,7 +857,8 @@
 
   // ---------- Settings ----------
   function viewSettings(m){
-    m.appendChild(vhead('Settings', el('span',null,'Rates power quotes and revenue; the Whop link appears on approved requests.')));
+    m.appendChild(vhead('Settings — '+pname(S.cur), el('span',null,'Rates power quotes and revenue; the Whop link appears on approved requests.')));
+    m.appendChild(filterBar(false));
     var st=prop().settings||{};
     var form=el('form','ed fade');
     var fs=document.createElement('fieldset'); var lg=document.createElement('legend'); lg.textContent='Billing & links'; fs.appendChild(lg);
@@ -687,24 +894,22 @@
   // ---------- shell ----------
   function renderView(){
     var m=$('main'); m.textContent='';
-    if(!S.cur){ m.appendChild(vhead('Welcome')); m.appendChild(el('div','empty','Add your first property to get started.')); return; }
+    if(!Object.keys(S.props).length){ m.appendChild(vhead('Welcome')); m.appendChild(el('div','empty','Add your first property to get started.')); return; }
     ({overview:viewOverview,requests:viewRequests,calendar:viewCalendar,editor:viewEditor,images:viewImages,settings:viewSettings})[S.view](m);
   }
   function load(){
     api('/api/admin/data').then(function(d){
       show(true);
       S.props=d.properties||{}; S.requests=d.requests||[]; S.blocks=d.blocks||[]; S.fields=d.contentFields||{};
-      var slugs=Object.keys(S.props).sort();
-      if(!S.cur||!S.props[S.cur])S.cur=slugs[0]||null;
-      renderSwitcher(); renderNav(); renderView();
+      sync();
+      renderNav(); renderView();
     }).catch(function(){ /* 401 already routed */ });
   }
-  $('psel').addEventListener('change',function(){ S.cur=this.value; S.calY=null; renderNav(); renderView(); });
   $('addProp').addEventListener('click',function(){
     var slug=prompt('Slug for the new property (lowercase-with-dashes):'); if(!slug)return;
     var name=prompt('Property name:'); if(!name)return;
     api('/api/admin/property',{method:'POST',body:JSON.stringify({slug:slug.trim(),name:name.trim(),content:{name:name.trim()}})})
-      .then(function(){ toast('Property added.'); S.cur=slug.trim(); load(); }).catch(function(e){ toast(e.message); });
+      .then(function(){ toast('Property added.'); S.filter=slug.trim(); load(); }).catch(function(e){ toast(e.message); });
   });
   var MAIN_SITE='https://casa-catalina-avalon.vercel.app';
   $('logout').addEventListener('click',function(){

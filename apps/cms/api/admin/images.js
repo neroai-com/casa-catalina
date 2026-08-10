@@ -33,10 +33,11 @@ module.exports = async (req, res) => {
     }
 
     if (req.method === 'PATCH') {
-      // Recategorize / recaption an existing image.
-      if (b.category == null && b.caption == null) return send(res, 400, { error: 'nothing to update' });
+      // Recategorize / recaption / refolder an existing image.
+      if (b.category == null && b.caption == null && b.folder == null) return send(res, 400, { error: 'nothing to update' });
       if (b.category != null && !catOk(b.category)) return send(res, 400, { error: 'bad category' });
       if (b.caption != null && typeof b.caption !== 'string') return send(res, 400, { error: 'bad caption' });
+      if (b.folder != null && typeof b.folder !== 'string') return send(res, 400, { error: 'bad folder' });
       const out = await mutate(function (data) {
         const p = data.properties[b.slug];
         if (!p) return { save: false, status: 404, body: { error: 'unknown property' } };
@@ -44,6 +45,7 @@ module.exports = async (req, res) => {
         if (!img) return { save: false, status: 404, body: { error: 'image not found' } };
         if (b.category != null) img.category = b.category;
         if (b.caption != null) img.caption = cleanText(b.caption, 120);
+        if (b.folder != null) img.folder = cleanText(b.folder, 40);
         return { save: true, status: 200, body: { ok: true, image: img } };
       });
       return send(res, out.status, out.body);
@@ -61,6 +63,7 @@ module.exports = async (req, res) => {
     const imgId = id();
     const caption = cleanText(b.caption, 120);
     const category = catOk(b.category) ? b.category : 'additional photos';
+    const folder = typeof b.folder === 'string' ? cleanText(b.folder, 40) : '';
     await setBlob(imgId, base64);
     const out = await mutate(function (data) {
       const p = data.properties[b.slug];
@@ -68,7 +71,7 @@ module.exports = async (req, res) => {
       p.images = p.images || [];
       if (p.images.length >= MAX_IMAGES)
         return { save: false, status: 400, body: { error: `Limit of ${MAX_IMAGES} images per property.` } };
-      p.images.push({ id: imgId, caption, category, addedAt: new Date().toISOString() });
+      p.images.push({ id: imgId, caption, category, folder, addedAt: new Date().toISOString() });
       return { save: true, status: 200, body: { ok: true, id: imgId } };
     });
     if (out.status !== 200) delBlob(imgId).catch(() => {});

@@ -33,6 +33,7 @@ function cleanText(v, maxLen) {
   if (typeof v !== 'string') return '';
   return v
     .replace(/[\u0000-\u001f\u007f<>]/g, ' ')
+    .replace(/[\u200b-\u200f\u202a-\u202e\u2060-\u2064\ufeff]/g, '')
     .replace(/\s+/g, ' ')
     .trim()
     .slice(0, maxLen);
