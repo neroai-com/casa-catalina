@@ -17,7 +17,9 @@ function redisEnv() {
 // show every booked date as open and 500 on writes with no useful log line.
 function assertConfigured() {
   if (process.env.VERCEL && !redisEnv()) {
-    throw new Error('Storage not configured: attach Upstash Redis so KV_REST_API_URL / KV_REST_API_TOKEN are set.');
+    const e = new Error('Storage not configured: attach Upstash Redis so KV_REST_API_URL / KV_REST_API_TOKEN are set.');
+    e.code = 'storage-unconfigured';
+    throw e;
   }
 }
 

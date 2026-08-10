@@ -29,6 +29,8 @@ module.exports = async (req, res) => {
     send(res, out.status, out.body);
   } catch (e) {
     console.error('login:', e.message);
-    send(res, 500, { error: 'unavailable' });
+    send(res, 500, { error: e.code === 'storage-unconfigured'
+      ? "Storage isn't connected yet — in Vercel: Storage → Create Database → Redis (Upstash) → connect it to the catalina-rentals-cms project, then Redeploy."
+      : 'unavailable' });
   }
 };
