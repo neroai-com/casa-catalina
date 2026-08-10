@@ -2,15 +2,15 @@
   "rewrites": [
     {
       "source": "/api/availability",
-      "destination": "https://catalina-rentals-cms.vercel.app/api/public/casa-catalina/availability"
+      "destination": "https://catalina-rentals-cms.vercel.app/api/public/334whittley-unit1/availability"
     },
     {
       "source": "/api/request",
-      "destination": "https://catalina-rentals-cms.vercel.app/api/public/casa-catalina/request"
+      "destination": "https://catalina-rentals-cms.vercel.app/api/public/334whittley-unit1/request"
     },
     {
       "source": "/api/content",
-      "destination": "https://catalina-rentals-cms.vercel.app/api/public/casa-catalina/content"
+      "destination": "https://catalina-rentals-cms.vercel.app/api/public/334whittley-unit1/content"
     }
   ],
   "headers": [
