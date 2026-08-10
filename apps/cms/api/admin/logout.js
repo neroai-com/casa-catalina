@@ -1,12 +1,11 @@
-const { mutate, load } = require('../_lib/store');
-const { clearCookie, isAuthed } = require('../_lib/auth');
-const { send } = require('../_lib/util');
+const { mutate, load } = require('../../../../packages/core/store');
+const { clearCookie, isAuthed } = require('../../../../packages/core/auth');
+const { send } = require('../../../../packages/core/util');
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') return send(res, 405, { error: 'method not allowed' });
   try {
-    // If the caller holds a valid session, bump the session version so every
-    // outstanding token (any device) is revoked — not just this cookie.
+    // Bump the session version so every outstanding token (any device) is revoked.
     const data = await load();
     if (isAuthed(req, data.meta.sessV)) {
       await mutate(function (d) {

@@ -1,7 +1,8 @@
-// Owner's manual calendar blocks: POST adds one, DELETE removes one (any source).
-const { load, mutate } = require('../_lib/store');
-const { isAuthed, sameOrigin } = require('../_lib/auth');
-const { isDate, nights, overlaps, cleanText, id, send } = require('../_lib/util');
+// Owner's manual calendar blocks per property: POST adds one, DELETE removes one.
+const { load, mutate } = require('../../../../packages/core/store');
+const { isAuthed, sameOrigin } = require('../../../../packages/core/auth');
+const { isDate, nights, overlaps, cleanText, id, send } = require('../../../../packages/core/util');
+const { slugOk } = require('../../../../packages/core/props');
 
 module.exports = async (req, res) => {
   if (!['POST', 'DELETE'].includes(req.method)) return send(res, 405, { error: 'method not allowed' });
@@ -27,13 +28,15 @@ module.exports = async (req, res) => {
       return send(res, out.status, out.body);
     }
 
-    const { start, end } = b;
+    const { property, start, end } = b;
+    if (!slugOk(property)) return send(res, 400, { error: 'bad property' });
     if (!isDate(start) || !isDate(end) || nights(start, end) < 1) return send(res, 400, { error: 'Invalid dates.' });
     const note = cleanText(b.note, 120);
     const out = await mutate(function (data) {
-      if (data.blocks.some(x => overlaps(start, end, x.start, x.end)))
+      if (!data.properties[property]) return { save: false, status: 404, body: { error: 'unknown property' } };
+      if (data.blocks.some(x => x.property === property && overlaps(start, end, x.start, x.end)))
         return { save: false, status: 409, body: { error: 'Overlaps an existing block.' } };
-      const block = { id: id(), start, end, source: 'owner', note };
+      const block = { id: id(), property, start, end, source: 'owner', note };
       data.blocks.push(block);
       return { save: true, status: 200, body: { ok: true, id: block.id } };
     });

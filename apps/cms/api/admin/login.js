@@ -1,6 +1,6 @@
-const { mutate } = require('../_lib/store');
-const { passwordOk, issueCookie, sameOrigin } = require('../_lib/auth');
-const { ipHash, send } = require('../_lib/util');
+const { mutate } = require('../../../../packages/core/store');
+const { passwordOk, issueCookie, sameOrigin } = require('../../../../packages/core/auth');
+const { ipHash, send } = require('../../../../packages/core/util');
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') return send(res, 405, { error: 'method not allowed' });

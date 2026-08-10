@@ -1,10 +1,11 @@
 // Storage adapter: Upstash Redis (Vercel Marketplace) in production, JSON file locally.
-// One property, low volume — the whole dataset lives in a single versioned JSON document.
+// Low volume — the whole dataset lives in a single versioned JSON document.
 // All writes go through mutate(), which retries on version conflict (optimistic CAS),
 // so concurrent guest submissions and owner approvals can't overwrite each other.
-const KEY = 'casa-catalina:data';
+const KEY = 'catalina-rentals:data';
 
-const EMPTY = { _v: 0, requests: [], blocks: [], meta: { recent: [], loginFail: [], sessV: 1 } };
+// Multi-property: properties keyed by slug; every request/block carries a `property` slug.
+const EMPTY = { _v: 0, properties: {}, requests: [], blocks: [], meta: { recent: [], loginFail: [], sessV: 1 } };
 
 function redisEnv() {
   const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;

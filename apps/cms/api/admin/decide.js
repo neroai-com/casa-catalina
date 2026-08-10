@@ -1,8 +1,8 @@
-// Approve / decline a request. Approval creates the calendar block; declining an
-// approved request removes its block.
-const { load, mutate } = require('../_lib/store');
-const { isAuthed, sameOrigin } = require('../_lib/auth');
-const { overlaps, id, send } = require('../_lib/util');
+// Approve / decline a request. Approval creates the property's calendar block;
+// declining an approved request removes its block.
+const { load, mutate } = require('../../../../packages/core/store');
+const { isAuthed, sameOrigin } = require('../../../../packages/core/auth');
+const { overlaps, id, send } = require('../../../../packages/core/util');
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') return send(res, 405, { error: 'method not allowed' });
@@ -20,11 +20,12 @@ module.exports = async (req, res) => {
       if (!r) return { save: false, status: 404, body: { error: 'request not found' } };
 
       if (action === 'approve') {
-        const clash = data.blocks.some(x => x.requestId !== r.id && overlaps(r.checkIn, r.checkOut, x.start, x.end));
+        const clash = data.blocks.some(x =>
+          x.property === r.property && x.requestId !== r.id && overlaps(r.checkIn, r.checkOut, x.start, x.end));
         if (clash) return { save: false, status: 409, body: { error: 'Those dates overlap an existing block.' } };
         r.status = 'approved';
         if (!data.blocks.some(x => x.requestId === r.id)) {
-          data.blocks.push({ id: id(), start: r.checkIn, end: r.checkOut, source: 'approval', requestId: r.id });
+          data.blocks.push({ id: id(), property: r.property, start: r.checkIn, end: r.checkOut, source: 'approval', requestId: r.id });
         }
       } else {
         r.status = 'declined';

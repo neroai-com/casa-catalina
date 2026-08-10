@@ -1,8 +1,14 @@
 {
-  "name": "casa-catalina",
+  "name": "catalina-rentals",
   "private": true,
-  "description": "Casa Catalina — static marketing site + serverless booking API (no build step)",
+  "description": "Catalina Rentals — property landing pages + central booking/content CMS (no build steps, no runtime deps)",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
-    "dev": "node dev-server.mjs"
+    "dev": "node dev-server.mjs",
+    "build": "npx turbo run build",
+    "test:e2e": "echo 'see /tmp e2e suites run via python3'"
   }
 }
