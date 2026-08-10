@@ -13,7 +13,7 @@ module.exports = async (req, res) => {
     if (!p) return send(res, 404, { error: 'unknown property' });
     send(res, 200, {
       content: p.content || {},
-      images: (p.images || []).map(x => ({ id: x.id, caption: x.caption })),
+      images: (p.images || []).map(x => ({ id: x.id, caption: x.caption, category: x.category || 'additional photos' })),
     });
   } catch (e) {
     console.error('content:', e.message);

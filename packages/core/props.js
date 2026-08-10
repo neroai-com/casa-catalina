@@ -60,4 +60,13 @@ function sanitizeSettings(input, cleanText) {
   return out;
 }
 
-module.exports = { slugOk, getSlug, CONTENT_FIELDS, sanitizeContent, SETTINGS_FIELDS, sanitizeSettings };
+// Image placement categories. LP gallery slots carry matching data-room
+// attributes; photos without a slot flow into the gallery in this order.
+// Keep in sync with IMG_CATS in apps/cms/index.html and CATS in each LP.
+const IMAGE_CATEGORIES = [
+  'exterior', 'living room', 'full kitchen', 'dining', 'bedroom', 'bedroom 2', 'bedroom 3',
+  'full bathroom', 'bathroom 2', 'laundry', 'patio', 'balcony', 'golf cart', 'view', 'additional photos',
+];
+function catOk(c) { return IMAGE_CATEGORIES.includes(c); }
+
+module.exports = { slugOk, getSlug, CONTENT_FIELDS, sanitizeContent, SETTINGS_FIELDS, sanitizeSettings, IMAGE_CATEGORIES, catOk };

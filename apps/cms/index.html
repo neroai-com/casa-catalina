@@ -35,12 +35,43 @@
   input:focus,select:focus,textarea:focus{outline:2px solid var(--sea)}
 
   /* login */
-  #login{max-width:360px;margin:14vh auto 0;background:var(--paper);border:1px solid var(--line);border-radius:20px;
-    padding:2rem 1.6rem;text-align:center;box-shadow:0 18px 44px -20px rgba(16,48,46,.34)}
-  #login h2{font-family:var(--serif);margin:.2rem 0 .3rem;font-size:1.4rem}
-  #login .sub{font-family:var(--mono);font-size:.64rem;letter-spacing:.22em;text-transform:uppercase;color:var(--terra-ink);margin-bottom:1.2rem}
-  #login input{width:100%;margin-bottom:.7rem}
-  #login .btn{width:100%;justify-content:center}
+  #login{position:fixed;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;
+    gap:1.15rem;padding:1.4rem;overflow:auto;
+    background:
+      radial-gradient(54rem 36rem at 10% -8%, rgba(127,169,172,.34), transparent 62%),
+      radial-gradient(46rem 32rem at 106% 110%, rgba(196,105,61,.17), transparent 60%),
+      radial-gradient(30rem 22rem at 92% 6%, rgba(176,134,58,.15), transparent 65%),
+      linear-gradient(180deg,var(--canvas),var(--mist))}
+  #login::before{content:"";position:fixed;inset:0;pointer-events:none;
+    background-image:radial-gradient(rgba(22,48,46,.05) 1px, transparent 1.4px);background-size:22px 22px}
+  .logincard{position:relative;margin-top:auto;width:min(400px,100%);background:rgba(251,250,246,.9);
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    border:1px solid rgba(218,216,207,.95);border-radius:26px;padding:2.4rem 2rem 1.9rem;text-align:center;
+    box-shadow:0 26px 70px -28px rgba(16,48,46,.5), inset 0 1px 0 rgba(255,255,255,.7)}
+  #login h2{font-family:var(--serif);margin:.7rem 0 .25rem;font-size:1.6rem;letter-spacing:.01em}
+  #login .sub{font-family:var(--mono);font-size:.62rem;letter-spacing:.26em;text-transform:uppercase;color:var(--terra-ink)}
+  .logindiv{width:56px;height:3px;border-radius:2px;margin:1.1rem auto 1.3rem;background:linear-gradient(90deg,var(--brass),var(--ocean))}
+  .loginlabel{display:block;text-align:left;font-family:var(--mono);font-size:.6rem;font-weight:700;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--stone);margin:0 0 .4rem .15rem}
+  .pwwrap{position:relative;margin-bottom:.9rem}
+  .pwwrap input{width:100%;padding:.78rem 3rem .78rem .95rem;border-radius:12px;font-size:1rem}
+  .pwwrap input:focus{outline:2px solid var(--ocean);border-color:var(--ocean)}
+  #pwToggle{position:absolute;top:50%;right:.45rem;transform:translateY(-50%);width:36px;height:36px;
+    display:grid;place-items:center;background:none;border:0;border-radius:9px;color:var(--stone)}
+  #pwToggle:hover{background:var(--mist);color:var(--ink)}
+  #loginBtn{width:100%;justify-content:center;padding:.82rem 1rem;border-radius:12px;font-size:.98rem;
+    background:linear-gradient(180deg,var(--ocean),var(--ocean-deep));box-shadow:0 12px 26px -12px rgba(15,110,122,.6);
+    transition:transform .18s var(--ease),box-shadow .18s var(--ease)}
+  #loginBtn:hover{transform:translateY(-1px);box-shadow:0 16px 30px -12px rgba(15,110,122,.7)}
+  #loginBtn:disabled{transform:none}
+  .loginfoot{position:relative;margin-bottom:auto;text-align:center}
+  .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0;padding:0;margin:-1px}
+  .backlink{display:inline-flex;align-items:center;gap:.45rem;padding:.52rem 1rem;border:1px solid var(--line);border-radius:999px;
+    background:rgba(251,250,246,.75);color:var(--ocean-deep);font-size:.88rem;font-weight:600;text-decoration:none;
+    transition:border-color .2s,background .2s}
+  .backlink:hover{border-color:var(--ocean);background:var(--paper)}
+  .loginloc{font-family:var(--mono);font-size:.64rem;letter-spacing:.22em;text-transform:uppercase;color:var(--stone);
+    margin-top:.75rem}
   .err{color:var(--terra-ink);font-size:.86rem;min-height:1.2em;margin:.5rem 0 0}
 
   /* app shell */
@@ -51,7 +82,7 @@
   .brand{font-family:var(--serif);font-size:1.15rem;font-weight:600;color:#fff;padding:.2rem .55rem 1rem;
     display:flex;align-items:center;gap:.6rem}
   .brand .brandlogo{width:42px;height:42px;flex:none}
-  .loginlogo{width:128px;height:128px;margin-bottom:.4rem}
+  .loginlogo{width:112px;height:112px;filter:drop-shadow(0 12px 20px rgba(16,48,46,.28))}
   .brand small{display:block;font-family:var(--mono);font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--sea);margin-bottom:.2rem}
   .pswitch{margin:0 .3rem 1rem}
   .pswitch select{width:100%;background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.2);color:#fff}
@@ -155,7 +186,14 @@
   .imcard img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:var(--mist)}
   .imcard .cap{font-size:.74rem;color:var(--stone);padding:.4rem .55rem;min-height:2em}
   .imcard .del{position:absolute;top:6px;right:6px;width:30px;height:30px;border-radius:50%;border:0;background:rgba(16,48,46,.72);color:#fff;font-size:.95rem;line-height:1}
-  .imcard .hero-tag{position:absolute;top:6px;left:6px;font-family:var(--mono);font-size:.56rem;letter-spacing:.1em;background:var(--ocean);color:#fff;border-radius:999px;padding:.15rem .5rem;text-transform:uppercase}
+  .imcard .catsel{width:calc(100% - 1rem);margin:.1rem .5rem .5rem;font-size:.74rem;padding:.35rem .5rem;border-radius:8px}
+  .imcat{font-family:var(--mono);font-size:.62rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--terra-ink);
+    margin:1.5rem 0 .7rem;padding-bottom:.4rem;border-bottom:1px solid var(--line)}
+  .imcat:first-of-type{margin-top:1.2rem}
+  .imcat small{color:var(--stone);font-weight:400;letter-spacing:.1em;margin-left:.4rem}
+  .upbar{display:flex;align-items:center;gap:.6rem;margin-bottom:.7rem;flex-wrap:wrap}
+  .upbar label{font-size:.82rem;color:var(--stone);font-weight:600}
+  .upbar select{font-size:.85rem;padding:.45rem .6rem}
   .upprog{font-size:.8rem;color:var(--stone);margin-bottom:.8rem;min-height:1.2em}
 
   #msg{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(90px);background:var(--ink);color:#fff;
@@ -169,14 +207,31 @@
 <body>
 
 <div id="login">
-  <img class="loginlogo" src="images/logo-casa-catalina.png" alt="Catalina Rentals — Vacation Rental" width="128" height="128">
-  <h2>Catalina Rentals</h2>
-  <div class="sub">Property Manager</div>
-  <form id="loginForm">
-    <input type="password" id="pw" placeholder="Password" autocomplete="current-password" required>
-    <button class="btn btn-teal" type="submit">Sign in</button>
-  </form>
-  <p class="err" id="loginErr"></p>
+  <div class="logincard fade">
+    <img class="loginlogo" src="images/logo-casa-catalina.png" alt="Catalina Rentals — Vacation Rental" width="112" height="112">
+    <h2>Catalina Rentals</h2>
+    <div class="sub">Property Manager</div>
+    <div class="logindiv" aria-hidden="true"></div>
+    <form id="loginForm">
+      <input class="vh" type="text" name="username" autocomplete="username" value="owner" readonly tabindex="-1" aria-hidden="true">
+      <label class="loginlabel" for="pw">Password</label>
+      <div class="pwwrap">
+        <input type="password" id="pw" placeholder="Enter your password" autocomplete="current-password" required>
+        <button type="button" id="pwToggle" aria-label="Show password" aria-pressed="false">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="2.8"/>
+            <line id="pwSlash" x1="4" y1="20" x2="20" y2="4" style="display:none"/>
+          </svg>
+        </button>
+      </div>
+      <button class="btn btn-teal" type="submit" id="loginBtn">Sign in</button>
+    </form>
+    <p class="err" id="loginErr" role="alert"></p>
+  </div>
+  <div class="loginfoot fade">
+    <a class="backlink" href="https://casa-catalina-avalon.vercel.app">&larr; Back to Casa Catalina</a>
+    <div class="loginloc">Avalon &middot; Santa Catalina Island</div>
+  </div>
 </div>
 
 <div id="app">
@@ -207,6 +262,7 @@
   function nightsOf(a,b){ return Math.round((Date.parse(b+'T00:00:00Z')-Date.parse(a+'T00:00:00Z'))/86400000); }
   function money(n){ return '$'+(Math.round(n*100)/100).toLocaleString('en-US'); }
   function el(t,c,x){ var e=document.createElement(t); if(c)e.className=c; if(x!=null)e.textContent=x; return e; }
+  window.addEventListener('pageshow',function(e){ if(e.persisted)location.reload(); });
   var msgT; function toast(t){ var m=$('msg'); m.textContent=t; m.classList.add('show'); clearTimeout(msgT); msgT=setTimeout(function(){ m.classList.remove('show'); },3200); }
 
   var S={ props:{}, requests:[], blocks:[], fields:{}, cur:null, view:'overview', calY:null, calM:null };
@@ -218,7 +274,9 @@
       return r.json().then(function(j){ if(!r.ok)throw new Error(j.error||'error'); return j; });
     });
   }
-  function show(a){ $('login').style.display=a?'none':''; $('app').style.display=a?'block':'none'; }
+  function resetPwReveal(){ var pw=$('pw'); pw.type='password';
+    $('pwToggle').setAttribute('aria-pressed','false'); $('pwSlash').style.display='none'; }
+  function show(a){ if(!a)resetPwReveal(); $('login').style.display=a?'none':''; $('app').style.display=a?'block':'none'; }
   function prop(){ return S.props[S.cur]||null; }
   function myReqs(){ return S.requests.filter(function(r){ return r.property===S.cur; }); }
   function myBlocks(){ return S.blocks.filter(function(b){ return b.property===S.cur; }); }
@@ -513,9 +571,24 @@
       img.src=url;
     });
   }
+  var IMG_CATS=['exterior','living room','full kitchen','dining','bedroom','bedroom 2','bedroom 3',
+    'full bathroom','bathroom 2','laundry','patio','balcony','golf cart','view','additional photos'];
+  function catLabel(c){ return c.replace(/(^|\s)[a-z]/g,function(ch){ return ch.toUpperCase(); }); }
+  function catSelect(value){
+    var s=document.createElement('select');
+    IMG_CATS.forEach(function(c){ var o=document.createElement('option'); o.value=c; o.textContent=catLabel(c); s.appendChild(o); });
+    s.value=IMG_CATS.indexOf(value)>=0?value:'additional photos';
+    return s;
+  }
   function viewImages(m){
-    m.appendChild(vhead('Images', el('span',null,'First image is the site hero; the rest fill the gallery in order.')));
+    m.appendChild(vhead('Images', el('span',null,'Give each photo a category — the live site places it in the matching spot (bedrooms, kitchen, exterior…).')));
     var prog=el('div','upprog'); prog.id='upProg';
+    var upbar=el('div','upbar');
+    var ulab=el('label',null,'New uploads go to'); ulab.htmlFor='upCat';
+    var usel=catSelect(S.upCat||'additional photos'); usel.id='upCat';
+    usel.onchange=function(){ S.upCat=usel.value; };
+    upbar.appendChild(ulab); upbar.appendChild(usel);
+    m.appendChild(upbar);
     var drop=el('div','drop');
     drop.appendChild(el('div',null,'Drop photos here or '));
     var b=el('b',null,'browse to upload'); drop.firstChild.appendChild(b);
@@ -537,7 +610,7 @@
         if(done>=files.length){ prog.textContent='Uploaded '+done+' image'+(done>1?'s':'')+'.'; load(); return; }
         prog.textContent='Uploading '+(done+1)+' of '+files.length+'…';
         downscale(files[done])
-          .then(function(dataUrl){ return api('/api/admin/images',{method:'POST',body:JSON.stringify({slug:S.cur,dataUrl:dataUrl,caption:files[done].name.replace(/\.[^.]+$/,'')})}); })
+          .then(function(dataUrl){ return api('/api/admin/images',{method:'POST',body:JSON.stringify({slug:S.cur,dataUrl:dataUrl,category:usel.value,caption:files[done].name.replace(/\.[^.]+$/,'')})}); })
           .then(function(){ done++; next(); })
           .catch(function(e){ prog.textContent='Upload failed: '+e.message; });
       })();
@@ -545,22 +618,35 @@
 
     var imgs=prop().images||[];
     if(!imgs.length){ m.appendChild(el('div','empty','No images yet — the site is using its built-in photos until you upload.')); return; }
-    var grid=el('div','imgrid');
-    imgs.forEach(function(im,i){
+    function card(im){
       var c=el('div','imcard fade');
       var img=document.createElement('img'); img.loading='lazy'; img.src=imgUrl(im.id); img.alt=im.caption||'';
       c.appendChild(img);
-      if(i===0)c.appendChild(el('span','hero-tag','hero'));
       c.appendChild(el('div','cap',im.caption||''));
+      var csel=catSelect(im.category); csel.className='catsel'; csel.setAttribute('aria-label','Image category');
+      csel.onchange=function(){
+        api('/api/admin/images',{method:'PATCH',body:JSON.stringify({slug:S.cur,id:im.id,category:csel.value})})
+          .then(function(){ toast('Moved to '+catLabel(csel.value)+'.'); load(); }).catch(function(e){ toast(e.message); load(); });
+      };
+      c.appendChild(csel);
       var del=el('button','del','×'); del.setAttribute('aria-label','Delete image');
       del.onclick=function(){
         if(!confirm('Delete this image?'))return;
         api('/api/admin/images',{method:'DELETE',body:JSON.stringify({slug:S.cur,id:im.id})})
           .then(function(){ toast('Image removed.'); load(); }).catch(function(e){ toast(e.message); });
       };
-      c.appendChild(del); grid.appendChild(c);
+      c.appendChild(del);
+      return c;
+    }
+    IMG_CATS.forEach(function(cat){
+      var mine=imgs.filter(function(im){ return (IMG_CATS.indexOf(im.category)>=0?im.category:'additional photos')===cat; });
+      if(!mine.length)return;
+      var h=el('h3','imcat',catLabel(cat)); h.appendChild(el('small',null,mine.length+(mine.length>1?' photos':' photo')));
+      m.appendChild(h);
+      var grid=el('div','imgrid');
+      mine.forEach(function(im){ grid.appendChild(card(im)); });
+      m.appendChild(grid);
     });
-    m.appendChild(grid);
   }
 
   // ---------- Settings ----------
@@ -620,14 +706,29 @@
     api('/api/admin/property',{method:'POST',body:JSON.stringify({slug:slug.trim(),name:name.trim(),content:{name:name.trim()}})})
       .then(function(){ toast('Property added.'); S.cur=slug.trim(); load(); }).catch(function(e){ toast(e.message); });
   });
+  var MAIN_SITE='https://casa-catalina-avalon.vercel.app';
   $('logout').addEventListener('click',function(){
-    api('/api/admin/logout',{method:'POST'}).then(function(){ show(false); }).catch(function(){ show(false); });
+    api('/api/admin/logout',{method:'POST'})
+      .then(function(){ location.href=MAIN_SITE; })
+      .catch(function(e){
+        if(e&&e.message==='unauthorized'){ location.href=MAIN_SITE; return; }
+        toast('Sign-out failed — check your connection and try again.');
+      });
+  });
+  $('pwToggle').addEventListener('click',function(e){
+    var pw=$('pw'), shown=pw.type==='text';
+    pw.type=shown?'password':'text';
+    this.setAttribute('aria-pressed',String(!shown));
+    $('pwSlash').style.display=shown?'none':'';
+    if(e.detail>0)pw.focus();
   });
   $('loginForm').addEventListener('submit',function(e){
     e.preventDefault(); $('loginErr').textContent='';
+    var b=$('loginBtn'); b.disabled=true; b.textContent='Signing in…';
+    var idle=function(){ b.disabled=false; b.textContent='Sign in'; };
     api('/api/admin/login',{method:'POST',body:JSON.stringify({password:$('pw').value})})
-      .then(function(){ $('pw').value=''; load(); })
-      .catch(function(e2){ $('loginErr').textContent=e2.message==='unauthorized'?'Wrong password.':e2.message; });
+      .then(function(){ idle(); $('pw').value=''; load(); })
+      .catch(function(e2){ idle(); $('loginErr').textContent=e2.message==='unauthorized'?'Wrong password.':e2.message; $('pw').focus(); });
   });
   load();
 })();

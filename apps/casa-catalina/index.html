@@ -473,7 +473,11 @@
   footer .fcol a{padding:.35rem 0;margin-bottom:.15rem}
   footer .fcol a .icon{color:var(--brass)}
   footer .fcol a:hover{color:#fff}
-  footer .fbar{border-top:1px solid rgba(255,255,255,.1);margin-top:2.2rem;padding-top:1.2rem;font-size:.78rem;color:rgba(201,214,211,.78);display:flex;flex-wrap:wrap;justify-content:space-between;gap:.5rem}
+  footer .fbar{border-top:1px solid rgba(255,255,255,.1);margin-top:2.2rem;padding-top:1.2rem;font-size:.78rem;color:rgba(201,214,211,.78);display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.7rem}
+  footer .flogin{display:inline-flex;align-items:center;gap:.45rem;border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:.42rem .85rem;
+    color:#C9D6D3;font-family:var(--mono);font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;transition:color .2s,border-color .2s}
+  footer .flogin .icon{width:13px;height:13px;color:var(--brass)}
+  footer .flogin:hover{color:#fff;border-color:rgba(255,255,255,.42)}
 
   /* sticky mobile cta */
   .sticky{position:fixed;left:0;right:0;bottom:0;z-index:60;background:rgba(251,250,246,.96);backdrop-filter:blur(10px);
@@ -684,7 +688,7 @@
             <h3>The island is yours</h3>
             <p>A complimentary street-legal golf cart comes with the home, parked out front. Our guests say it's the best part of the trip — the keys to every lookout, beach, and cove in car-free Avalon.</p>
           </div>
-          <figure class="hlfig"><img class="par" loading="lazy" src="images/golfCart.jpg" alt="The complimentary street-legal golf cart parked in front of Casa Catalina"></figure>
+          <figure class="hlfig"><img data-roomimg="golf cart" class="par" loading="lazy" src="images/golfCart.jpg" alt="The complimentary street-legal golf cart parked in front of Casa Catalina"></figure>
         </div>
         <div class="hlrow flip" data-reveal>
           <div class="hltext">
@@ -692,7 +696,7 @@
             <h3>Newly remodeled, top to bottom</h3>
             <p>A brand-new, fully stocked kitchen, light-wood floors, and fresh coastal interiors throughout. Two king bedrooms, each with its own en-suite bathroom and a smart TV.</p>
           </div>
-          <figure class="hlfig"><img class="par" loading="lazy" src="images/kitchen.jpg" alt="Brand-new white kitchen with stainless appliances and granite counters"></figure>
+          <figure class="hlfig"><img data-roomimg="full kitchen" class="par" loading="lazy" src="images/kitchen.jpg" alt="Brand-new white kitchen with stainless appliances and granite counters"></figure>
         </div>
         <div class="hlrow" data-reveal>
           <div class="hltext">
@@ -700,7 +704,7 @@
             <h3>Your own private patio</h3>
             <p>A walled patio with a shaded dining table and a gas BBQ — the spot for morning coffee and a sunset dinner after a day out on the water.</p>
           </div>
-          <figure class="hlfig"><img class="par" loading="lazy" src="images/patio.jpg" alt="Private walled patio with a shaded dining set and gas BBQ under a palm"></figure>
+          <figure class="hlfig"><img data-roomimg="patio" class="par" loading="lazy" src="images/patio.jpg" alt="Private walled patio with a shaded dining set and gas BBQ under a palm"></figure>
         </div>
       </div>
     </div>
@@ -753,18 +757,18 @@
     </div>
     <div class="wrap">
       <div class="gal" data-reveal>
-        <figure class="vfx"><img class="vfx-poster" loading="lazy" src="images/livingRoom.jpg" alt="Open living room with a grey sofa flowing into the kitchen"><video class="vfx-video" muted loop playsinline preload="none" data-src="videos/room-living.mp4" aria-hidden="true"></video></figure>
-        <figure class="vfx"><img class="vfx-poster" loading="lazy" src="images/bedroomView.jpg" alt="King bedroom with tropical bedding and windows over the Avalon hillside"><video class="vfx-video" muted loop playsinline preload="none" data-src="videos/room-bedroom.mp4" aria-hidden="true"></video></figure>
-        <figure class="vfx"><img class="vfx-poster" loading="lazy" src="images/patio.jpg" alt="Private patio with dining and BBQ"><video class="vfx-video" muted loop playsinline preload="none" data-src="videos/room-patio.mp4" aria-hidden="true"></video></figure>
-        <figure class="vfx"><img class="vfx-poster" loading="lazy" src="images/kitchen.jpg" alt="Brand-new white kitchen"><video class="vfx-video" muted loop playsinline preload="none" data-src="videos/room-kitchen.mp4" aria-hidden="true"></video></figure>
-        <figure><img loading="lazy" src="images/golfCart.jpg" alt="The included street-legal golf cart"></figure>
-        <figure class="vfx"><img class="vfx-poster" loading="lazy" src="images/bathTub.jpg" alt="En-suite bathroom with glass shower over tub"><video class="vfx-video" muted loop playsinline preload="none" data-src="videos/room-bath.mp4" aria-hidden="true"></video></figure>
-        <figure><img loading="lazy" src="images/livingNook.jpg" alt="Living and dining nook with ship-wheel décor and a slider to the patio"></figure>
-        <figure><img loading="lazy" src="images/bedroomKing.jpg" alt="Second king bedroom with wood headboard and mirrored closet"></figure>
-        <figure><img loading="lazy" src="images/patioUmbrella.jpg" alt="Patio dining table for six under a blue umbrella"></figure>
+        <figure class="vfx" data-room="living room"><img class="vfx-poster" loading="lazy" src="images/livingRoom.jpg" alt="Open living room with a grey sofa flowing into the kitchen"><video class="vfx-video" muted loop playsinline preload="none" data-src="videos/room-living.mp4" aria-hidden="true"></video></figure>
+        <figure class="vfx" data-room="bedroom"><img class="vfx-poster" loading="lazy" src="images/bedroomView.jpg" alt="King bedroom with tropical bedding and windows over the Avalon hillside"><video class="vfx-video" muted loop playsinline preload="none" data-src="videos/room-bedroom.mp4" aria-hidden="true"></video></figure>
+        <figure class="vfx" data-room="patio"><img class="vfx-poster" loading="lazy" src="images/patio.jpg" alt="Private patio with dining and BBQ"><video class="vfx-video" muted loop playsinline preload="none" data-src="videos/room-patio.mp4" aria-hidden="true"></video></figure>
+        <figure class="vfx" data-room="full kitchen"><img class="vfx-poster" loading="lazy" src="images/kitchen.jpg" alt="Brand-new white kitchen"><video class="vfx-video" muted loop playsinline preload="none" data-src="videos/room-kitchen.mp4" aria-hidden="true"></video></figure>
+        <figure data-room="golf cart"><img loading="lazy" src="images/golfCart.jpg" alt="The included street-legal golf cart"></figure>
+        <figure class="vfx" data-room="full bathroom"><img class="vfx-poster" loading="lazy" src="images/bathTub.jpg" alt="En-suite bathroom with glass shower over tub"><video class="vfx-video" muted loop playsinline preload="none" data-src="videos/room-bath.mp4" aria-hidden="true"></video></figure>
+        <figure data-room="dining"><img loading="lazy" src="images/livingNook.jpg" alt="Living and dining nook with ship-wheel décor and a slider to the patio"></figure>
+        <figure data-room="bedroom 2"><img loading="lazy" src="images/bedroomKing.jpg" alt="Second king bedroom with wood headboard and mirrored closet"></figure>
+        <figure data-room="patio"><img loading="lazy" src="images/patioUmbrella.jpg" alt="Patio dining table for six under a blue umbrella"></figure>
         <figure><img loading="lazy" src="images/hallway.jpg" alt="Bright hallway with a jute runner"></figure>
-        <figure><img loading="lazy" src="images/bathShower.jpg" alt="En-suite bathroom with a walk-in shower"></figure>
-        <figure><img loading="lazy" src="images/grill.jpg" alt="Full-size stainless gas BBQ grill on the patio"></figure>
+        <figure data-room="bathroom 2"><img loading="lazy" src="images/bathShower.jpg" alt="En-suite bathroom with a walk-in shower"></figure>
+        <figure data-room="patio"><img loading="lazy" src="images/grill.jpg" alt="Full-size stainless gas BBQ grill on the patio"></figure>
       </div>
       <p class="galhint"><svg class="icon" style="width:16px;height:16px"><use href="#i-swipe"/></svg> Swipe · tap any photo to enlarge</p>
     </div>
@@ -780,11 +784,11 @@
       </div>
       <div data-reveal><span class="sleeps"><svg class="icon"><use href="#i-users"/></svg> Sleeps 6 — 2 king beds · 1 queen sleeper sofa</span></div>
       <div class="rooms">
-        <div class="room" data-reveal data-d="1"><div class="rimg"><img loading="lazy" src="images/bedroomView.jpg" alt="Primary king suite with hillside views"></div>
+        <div class="room" data-reveal data-d="1"><div class="rimg"><img data-roomimg="bedroom" loading="lazy" src="images/bedroomView.jpg" alt="Primary king suite with hillside views"></div>
           <div class="rbody"><h3>Primary King Suite</h3><div class="rbed">King bed · en-suite bath</div><div class="rnote">Windows framing the Avalon hillside, a smart TV, and its own full bathroom.</div></div></div>
-        <div class="room" data-reveal data-d="2"><div class="rimg"><img loading="lazy" src="images/bedroomKing.jpg" alt="Second king suite with mirrored closet"></div>
+        <div class="room" data-reveal data-d="2"><div class="rimg"><img data-roomimg="bedroom 2" loading="lazy" src="images/bedroomKing.jpg" alt="Second king suite with mirrored closet"></div>
           <div class="rbody"><h3>Second King Suite</h3><div class="rbed">King bed · en-suite bath</div><div class="rnote">A wood headboard, mirrored closet, smart TV, and a private en-suite bathroom.</div></div></div>
-        <div class="room" data-reveal data-d="3"><div class="rimg"><img loading="lazy" src="images/livingRoom.jpg" alt="Open living room that opens to the patio"></div>
+        <div class="room" data-reveal data-d="3"><div class="rimg"><img data-roomimg="living room" loading="lazy" src="images/livingRoom.jpg" alt="Open living room that opens to the patio"></div>
           <div class="rbody"><h3>Living &amp; patio</h3><div class="rbed">Queen sleeper sofa</div><div class="rnote">An open living room that opens to the private patio, gas BBQ, and dining for six.</div></div></div>
       </div>
       <ul class="notes" data-reveal>
@@ -969,6 +973,7 @@
     <div class="fbar">
       <span>© 2026 Catalina Rentals Hub · Casa Catalina</span>
       <span>Independently hosted · book direct</span>
+      <a class="flogin" href="https://catalina-rentals-cms.vercel.app" rel="nofollow"><svg class="icon"><use href="#i-key"/></svg> Owner login</a>
     </div>
   </div>
 </footer>
@@ -1209,7 +1214,9 @@
   if(!reduce){
     document.querySelectorAll('[data-count]').forEach(function(el){
       var end=+el.getAttribute('data-count'), t0=null, dur=900;
-      function step(ts){ if(!t0)t0=ts; var p=Math.min((ts-t0)/dur,1); el.textContent=Math.round(p*end); if(p<1)raf(step); }
+      function step(ts){ if(!t0)t0=ts; var p=Math.min((ts-t0)/dur,1);
+        var live=parseInt(el.getAttribute('data-count'),10); if(!isNaN(live))end=live; // CMS hydration may retarget mid-flight
+        el.textContent=Math.round(p*end); if(p<1)raf(step); }
       el.textContent='0'; raf(step);
     });
   }
@@ -1279,19 +1286,39 @@
             if(a.textContent.indexOf('@')>0) a.textContent=c.email;
           });
         }
-        // Owner-managed photos: replace gallery figures in order (first image is
-        // already the CMS hero concept; gallery consumes the full set).
+        // Owner-managed photos: place by category first (figure data-room + room
+        // previews), fill leftover slots in canonical order, append the extras.
         var imgs=j&&j.images;
         if(imgs&&imgs.length){
-          var figs=document.querySelectorAll('.gal figure');
-          for(var i=0;i<figs.length&&i<imgs.length;i++){
-            var fig=figs[i], im=fig.querySelector('img');
-            if(!im)continue;
-            im.src='/api/image/'+imgs[i].id;
-            if(imgs[i].caption){ im.alt=imgs[i].caption; im.setAttribute('aria-label','Enlarge photo: '+imgs[i].caption); }
-            var vid=fig.querySelector('video');
-            if(vid){ vid.remove(); fig.classList.remove('vfx'); im.style.position='relative'; im.style.height='100%'; }
-          }
+          var CATS=['exterior','living room','full kitchen','dining','bedroom','bedroom 2','bedroom 3',
+            'full bathroom','bathroom 2','laundry','patio','balcony','golf cart','view','additional photos'];
+          var pools={}, assigned={};
+          imgs.forEach(function(im){ var c=CATS.indexOf(im.category)>=0?im.category:'additional photos'; (pools[c]=pools[c]||[]).push(im); });
+          var setImg=function(imEl,im){ imEl.src='/api/image/'+im.id;
+            var cap=im.caption||'Photo of the home';
+            imEl.alt=cap; imEl.setAttribute('aria-label','Enlarge photo: '+cap); };
+          var fillFig=function(fig,im){ var imEl=fig.querySelector('img'); if(!imEl)return; setImg(imEl,im);
+            var vid=fig.querySelector('video'); if(vid){ vid.remove(); fig.classList.remove('vfx'); imEl.style.position='relative'; imEl.style.height='100%'; } };
+          // Room cards and highlight figures preview their category's first photo.
+          document.querySelectorAll('img[data-roomimg]').forEach(function(imEl){
+            var q=pools[imEl.getAttribute('data-roomimg')];
+            if(q&&q.length){ imEl.src='/api/image/'+q[0].id; if(q[0].caption)imEl.alt=q[0].caption; }
+          });
+          var figs=[].slice.call(document.querySelectorAll('.gal figure')), unfilled=[];
+          figs.forEach(function(fig){
+            var room=fig.getAttribute('data-room'), q=room&&pools[room], im=(q&&q.length)?q.shift():null;
+            if(im){ assigned[im.id]=1; fillFig(fig,im); } else unfilled.push(fig);
+          });
+          var rest=[];
+          CATS.forEach(function(c){ (pools[c]||[]).forEach(function(im){ if(!assigned[im.id])rest.push(im); }); });
+          unfilled.forEach(function(fig){ var im=rest.shift(); if(im){ assigned[im.id]=1; fillFig(fig,im); } });
+          var gal=document.querySelector('.gal');
+          if(gal)rest.forEach(function(im){
+            var fig=document.createElement('figure'), imEl=document.createElement('img');
+            imEl.loading='lazy'; imEl.alt='Photo of the home'; setImg(imEl,im);
+            fig.appendChild(imEl); gal.appendChild(fig);
+          });
+          if(window.__lbRefresh)window.__lbRefresh();
         }
       })
       .catch(function(){ /* static host or CMS unreachable — baked-in copy stands */ });
@@ -1554,17 +1581,23 @@
   // lightbox — click, keyboard (Enter/Space to open, arrows to move, Esc to close), swipe; focus managed
   var lb=document.getElementById('lb'), lbimg=document.getElementById('lbimg'),
       lbx=document.getElementById('lbx'), lbct=document.getElementById('lbct');
-  var figs=[].slice.call(document.querySelectorAll('.gal figure img')), idx=0, lastFocus=null;
-  function openLb(i,trigger){ if(trigger)lastFocus=trigger; idx=(i+figs.length)%figs.length;
+  var idx=0, lastFocus=null;
+  function allImgs(){ return [].slice.call(document.querySelectorAll('.gal figure img')); }
+  function openLb(i,trigger){ var figs=allImgs(); if(!figs.length)return; if(trigger)lastFocus=trigger; idx=(i+figs.length)%figs.length;
     lbimg.src=figs[idx].src; lbimg.alt=figs[idx].alt; lbct.textContent=(idx+1)+' / '+figs.length;
     lb.classList.add('open'); lb.removeAttribute('aria-hidden'); document.body.classList.add('lock'); lbx.focus({preventScroll:true}); }
   function closeLb(){ if(!lb.classList.contains('open'))return; lb.classList.remove('open'); lb.setAttribute('aria-hidden','true');
     document.body.classList.remove('lock'); lbimg.src=''; if(lastFocus){ lastFocus.focus({preventScroll:true}); lastFocus=null; } }
-  figs.forEach(function(im,i){
-    im.setAttribute('role','button'); im.setAttribute('tabindex','0'); im.setAttribute('aria-label','Enlarge photo: '+im.alt);
-    im.addEventListener('click',function(){ openLb(i,im); });
-    im.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openLb(i,im); } });
-  });
+  function bindFigs(){
+    allImgs().forEach(function(im){
+      if(im.__lb)return; im.__lb=1;
+      im.setAttribute('role','button'); im.setAttribute('tabindex','0');
+      if(!im.getAttribute('aria-label'))im.setAttribute('aria-label','Enlarge photo: '+im.alt);
+      im.addEventListener('click',function(){ openLb(allImgs().indexOf(im),im); });
+      im.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openLb(allImgs().indexOf(im),im); } });
+    });
+  }
+  bindFigs(); window.__lbRefresh=bindFigs;
   lbx.addEventListener('click',closeLb);
   lb.addEventListener('click',function(e){ if(e.target===lb)closeLb(); });
   lb.addEventListener('keydown',function(e){ if(e.key==='Tab'){ e.preventDefault(); lbx.focus(); } });
