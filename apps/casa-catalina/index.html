@@ -377,6 +377,57 @@
   #bcSubmit:disabled{opacity:.55;cursor:default}
   #bcMsg{margin-top:.7rem;text-align:center;font-size:.88rem;min-height:1.3em;color:#FFD9C4}
   #bcMsg.ok{color:#B8E6C8}
+  /* full-screen booking takeover */
+  #bookModal{position:fixed;inset:0;z-index:95;display:flex;align-items:stretch;justify-content:center}
+  #bookModal[hidden]{display:none}
+  .bm-scrim{position:absolute;inset:0;background:
+    radial-gradient(120% 90% at 80% -10%, rgba(15,110,122,.55), transparent 60%),
+    linear-gradient(160deg, rgba(10,32,36,.97), rgba(7,22,26,.99));
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);opacity:0;transition:opacity .35s var(--ease)}
+  #bookModal.open .bm-scrim{opacity:1}
+  .bm-panel{position:relative;display:flex;flex-direction:column;width:100%;height:100vh;height:100dvh;
+    background:transparent;transform:translateY(6%);opacity:0;transition:transform .5s var(--ease),opacity .4s var(--ease)}
+  #bookModal.open .bm-panel{transform:none;opacity:1}
+  .bm-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex:none;
+    padding:calc(.9rem + env(safe-area-inset-top)) max(20px,env(safe-area-inset-right)) .9rem max(20px,env(safe-area-inset-left))}
+  .bm-title{font-family:var(--serif);font-size:1.25rem;font-weight:600;color:#fff;letter-spacing:-.01em}
+  .bm-title small{display:block;font-family:var(--mono);font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:var(--sea);margin-bottom:.15rem}
+  .bm-x{width:44px;height:44px;flex:none;border-radius:50%;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.08);
+    color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .25s,transform .25s}
+  .bm-x:hover{background:rgba(255,255,255,.18);transform:rotate(90deg)}
+  .bm-body{flex:1;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
+    padding:0 max(20px,env(safe-area-inset-right)) calc(1.6rem + env(safe-area-inset-bottom)) max(20px,env(safe-area-inset-left))}
+  .bm-body #bookCal{margin-top:.2rem}
+  @media(min-width:720px){
+    #bookModal{align-items:center}
+    .bm-panel{height:auto;max-height:min(92dvh,860px);width:min(560px,94vw);border-radius:24px;
+      background:linear-gradient(180deg,rgba(22,48,46,.65),rgba(16,40,40,.35));border:1px solid rgba(255,255,255,.12);
+      box-shadow:0 60px 140px -40px rgba(0,0,0,.7);transform:translateY(14px) scale(.97)}
+    #bookModal.open .bm-panel{transform:none}
+    .bm-head{padding:1.3rem 1.8rem 1rem}
+    .bm-body{padding:0 1.8rem 1.8rem}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .bm-scrim,.bm-panel{transition:none}
+    .bm-panel{transform:none}
+  }
+  /* trigger button in the book section */
+  .book-open{display:inline-flex;flex-direction:column;align-items:center;gap:.15rem;margin-top:1.7rem;
+    padding:1.05rem 2.4rem;font-size:1.05rem}
+  .book-open .bo-sub{font-size:.72rem;font-weight:500;opacity:.75;letter-spacing:.02em}
+  /* calendar micro-interactions */
+  .bc-grid button{transition:background .18s,transform .12s}
+  .bc-grid button:active:not(:disabled){transform:scale(.92)}
+  .bc-grid button.start,.bc-grid button.end{animation:bcpop .28s var(--ease)}
+  @keyframes bcpop{0%{transform:scale(.8)}60%{transform:scale(1.08)}100%{transform:scale(1)}}
+  .bc-grid.slide-l{animation:bcslideL .3s var(--ease)}
+  .bc-grid.slide-r{animation:bcslideR .3s var(--ease)}
+  @keyframes bcslideL{from{opacity:0;transform:translateX(26px)}to{opacity:1;transform:none}}
+  @keyframes bcslideR{from{opacity:0;transform:translateX(-26px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){
+    .bc-grid button,.bc-grid.slide-l,.bc-grid.slide-r,.bc-grid button.start,.bc-grid button.end{animation:none;transition:none}
+  }
+
   /* booking wizard steps */
   .bc-prog{display:flex;justify-content:center;gap:1.4rem;list-style:none;margin:0 0 1rem;padding:0}
   .bc-prog li{display:inline-flex;align-items:center;gap:.45rem;font-family:var(--mono);font-size:.66rem;
@@ -861,48 +912,10 @@
         <h2 style="margin-top:.4rem">Request your dates</h2>
         <p class="lead" data-cms="bookLead">Tell us when you'd like to come and how many guests, and Thomas &amp; Megan will confirm by email or text. For the fastest answer, call or text the host directly.</p>
 
-        <div id="bookCal" hidden>
-          <ol class="bc-prog" id="bcProg" aria-label="Booking steps">
-            <li id="bcP1" aria-current="step"><span class="dot">1</span> Dates</li>
-            <li id="bcP2"><span class="dot">2</span> Guests &amp; details</li>
-          </ol>
-          <div id="bcStep1">
-          <div class="bc-cal" role="group" aria-label="Availability calendar">
-            <div class="bc-head">
-              <button type="button" class="bc-nav" id="bcPrev" aria-label="Previous month">&#8249;</button>
-              <div class="bc-title" id="bcTitle" aria-live="polite"></div>
-              <button type="button" class="bc-nav" id="bcNext" aria-label="Next month">&#8250;</button>
-            </div>
-            <div class="bc-dow" aria-hidden="true"><span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span></div>
-            <div class="bc-grid" id="bcGrid"></div>
-            <div class="bc-legend" aria-hidden="true">
-              <span><span class="lg avail"></span>Open</span>
-              <span><span class="lg booked"></span>Booked</span>
-              <span><span class="lg sel"></span>Your stay</span>
-            </div>
-          </div>
-          <p class="bc-sum" id="bcSum" aria-live="polite">Tap your check-in date to start</p>
-          <button type="button" class="btn btn-light bc-next" id="bcNextStep" disabled>Select your dates</button>
-          </div><!-- /bcStep1 -->
-
-          <div id="bcStep2" hidden tabindex="-1" role="group" aria-label="Guests and contact details">
-          <button type="button" class="bc-back" id="bcBack"><svg class="icon" aria-hidden="true"><use href="#i-chev"/></svg> <span id="bcBackLabel">Change dates</span></button>
-          <div class="bc-party">
-            <div class="bc-step"><span class="lbl">Adults<small>13+</small></span><span class="ctl"><button type="button" data-step="adults" data-d="-1" aria-label="Fewer adults">&#8722;</button><span class="val" data-val="adults">2</span><button type="button" data-step="adults" data-d="1" aria-label="More adults">+</button></span></div>
-            <div class="bc-step"><span class="lbl">Children<small>2&#8211;12</small></span><span class="ctl"><button type="button" data-step="children" data-d="-1" aria-label="Fewer children">&#8722;</button><span class="val" data-val="children">0</span><button type="button" data-step="children" data-d="1" aria-label="More children">+</button></span></div>
-            <div class="bc-step"><span class="lbl">Infants<small>under 2</small></span><span class="ctl"><button type="button" data-step="infants" data-d="-1" aria-label="Fewer infants">&#8722;</button><span class="val" data-val="infants">0</span><button type="button" data-step="infants" data-d="1" aria-label="More infants">+</button></span></div>
-            <div class="bc-step"><span class="lbl">Pets<small>ask us first</small></span><span class="ctl"><button type="button" data-step="pets" data-d="-1" aria-label="Fewer pets">&#8722;</button><span class="val" data-val="pets">0</span><button type="button" data-step="pets" data-d="1" aria-label="More pets">+</button></span></div>
-          </div>
-          <div class="bc-fields">
-            <label class="bc-hp" aria-hidden="true">Website <input type="text" id="bcHp" tabindex="-1" autocomplete="off"></label>
-            <input type="text" id="bcName" placeholder="Your name" autocomplete="name" maxlength="80">
-            <input type="text" id="bcContact" placeholder="Phone or email" autocomplete="tel" maxlength="120" inputmode="email">
-            <textarea id="bcNote" placeholder="Anything we should know? (optional)" maxlength="500"></textarea>
-          </div>
-          <button type="button" class="btn btn-light" id="bcSubmit">Request these dates</button>
-          </div><!-- /bcStep2 -->
-          <p id="bcMsg" role="status"></p>
-        </div>
+        <button type="button" class="btn btn-light book-open" id="bookOpen" hidden>
+          Check availability
+          <span class="bo-sub">Pick your dates — it takes under a minute</span>
+        </button>
 
         <div class="ways">
           <a class="btn btn-primary" href="tel:+13106126493"><svg class="icon"><use href="#i-phone"/></svg> 310.612.6493</a>
@@ -963,6 +976,60 @@
 <div class="sticky" id="sticky">
   <div class="st"><b data-cms="ratesNote">Rates by request</b><span>Casa Catalina · Avalon</span></div>
   <a class="btn btn-primary" href="#book" style="padding:.75rem 1.3rem">Check availability</a>
+</div>
+
+<div id="bookModal" role="dialog" aria-modal="true" aria-labelledby="bmTitle" hidden>
+  <div class="bm-scrim" id="bmScrim"></div>
+  <div class="bm-panel" id="bmPanel">
+    <div class="bm-head">
+      <div class="bm-title" id="bmTitle"><small data-cms="locationLine">Avalon · Catalina Island</small>Request your dates</div>
+      <button type="button" class="bm-x" id="bmClose" aria-label="Close booking"><svg class="icon" style="width:20px;height:20px"><use href="#i-x"/></svg></button>
+    </div>
+    <div class="bm-body">
+      <div id="bookCal" hidden>
+          <ol class="bc-prog" id="bcProg" aria-label="Booking steps">
+            <li id="bcP1" aria-current="step"><span class="dot">1</span> Dates</li>
+            <li id="bcP2"><span class="dot">2</span> Guests &amp; details</li>
+          </ol>
+          <div id="bcStep1">
+          <div class="bc-cal" role="group" aria-label="Availability calendar">
+            <div class="bc-head">
+              <button type="button" class="bc-nav" id="bcPrev" aria-label="Previous month">&#8249;</button>
+              <div class="bc-title" id="bcTitle" aria-live="polite"></div>
+              <button type="button" class="bc-nav" id="bcNext" aria-label="Next month">&#8250;</button>
+            </div>
+            <div class="bc-dow" aria-hidden="true"><span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span></div>
+            <div class="bc-grid" id="bcGrid"></div>
+            <div class="bc-legend" aria-hidden="true">
+              <span><span class="lg avail"></span>Open</span>
+              <span><span class="lg booked"></span>Booked</span>
+              <span><span class="lg sel"></span>Your stay</span>
+            </div>
+          </div>
+          <p class="bc-sum" id="bcSum" aria-live="polite">Tap your check-in date to start</p>
+          <button type="button" class="btn btn-light bc-next" id="bcNextStep" disabled>Select your dates</button>
+          </div><!-- /bcStep1 -->
+
+          <div id="bcStep2" hidden tabindex="-1" role="group" aria-label="Guests and contact details">
+          <button type="button" class="bc-back" id="bcBack"><svg class="icon" aria-hidden="true"><use href="#i-chev"/></svg> <span id="bcBackLabel">Change dates</span></button>
+          <div class="bc-party">
+            <div class="bc-step"><span class="lbl">Adults<small>13+</small></span><span class="ctl"><button type="button" data-step="adults" data-d="-1" aria-label="Fewer adults">&#8722;</button><span class="val" data-val="adults">2</span><button type="button" data-step="adults" data-d="1" aria-label="More adults">+</button></span></div>
+            <div class="bc-step"><span class="lbl">Children<small>2&#8211;12</small></span><span class="ctl"><button type="button" data-step="children" data-d="-1" aria-label="Fewer children">&#8722;</button><span class="val" data-val="children">0</span><button type="button" data-step="children" data-d="1" aria-label="More children">+</button></span></div>
+            <div class="bc-step"><span class="lbl">Infants<small>under 2</small></span><span class="ctl"><button type="button" data-step="infants" data-d="-1" aria-label="Fewer infants">&#8722;</button><span class="val" data-val="infants">0</span><button type="button" data-step="infants" data-d="1" aria-label="More infants">+</button></span></div>
+            <div class="bc-step"><span class="lbl">Pets<small>ask us first</small></span><span class="ctl"><button type="button" data-step="pets" data-d="-1" aria-label="Fewer pets">&#8722;</button><span class="val" data-val="pets">0</span><button type="button" data-step="pets" data-d="1" aria-label="More pets">+</button></span></div>
+          </div>
+          <div class="bc-fields">
+            <label class="bc-hp" aria-hidden="true">Website <input type="text" id="bcHp" tabindex="-1" autocomplete="off"></label>
+            <input type="text" id="bcName" placeholder="Your name" autocomplete="name" maxlength="80">
+            <input type="text" id="bcContact" placeholder="Phone or email" autocomplete="tel" maxlength="120" inputmode="email">
+            <textarea id="bcNote" placeholder="Anything we should know? (optional)" maxlength="500"></textarea>
+          </div>
+          <button type="button" class="btn btn-light" id="bcSubmit">Request these dates</button>
+          </div><!-- /bcStep2 -->
+          <p id="bcMsg" role="status"></p>
+        </div>
+    </div>
+  </div>
 </div>
 
 <div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Photo viewer" aria-hidden="true">
@@ -1178,6 +1245,7 @@
   // smooth anchor scroll
   document.querySelectorAll('a[href^="#"]').forEach(function(a){
     a.addEventListener('click',function(e){ var t=document.querySelector(a.getAttribute('href')); if(!t)return;
+      if(a.getAttribute('href')==='#book'&&window.__openBooking&&window.__openBooking(a)){ e.preventDefault(); closeD(); return; }
       e.preventDefault(); closeD(); t.scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'}); });
   });
 
@@ -1222,6 +1290,9 @@
     var grid=document.getElementById('bcGrid'), title=document.getElementById('bcTitle'),
         prevB=document.getElementById('bcPrev'), nextB=document.getElementById('bcNext'),
         sum=document.getElementById('bcSum'), submit=document.getElementById('bcSubmit'), msg=document.getElementById('bcMsg'),
+        modal=document.getElementById('bookModal'), bmPanel=document.getElementById('bmPanel'),
+        bmClose=document.getElementById('bmClose'), bmScrim=document.getElementById('bmScrim'),
+        bookOpen=document.getElementById('bookOpen'),
         step1=document.getElementById('bcStep1'), step2=document.getElementById('bcStep2'),
         nextStep=document.getElementById('bcNextStep'), backBtn=document.getElementById('bcBack'),
         backLabel=document.getElementById('bcBackLabel'), prog1=document.getElementById('bcP1'), prog2=document.getElementById('bcP2');
@@ -1252,7 +1323,7 @@
         .then(function(j){
           blocked={};
           (j.blocked||[]).forEach(function(b){ eachNight(b.start,b.end,function(d){ blocked[d]=1; }); });
-          if(first){ root.hidden=false; syncSteppers(); }
+          if(first){ root.hidden=false; if(bookOpen)bookOpen.hidden=false; syncSteppers(); }
           // If a refresh reveals the current selection now conflicts, start over.
           var invalidated=selIn&&selOut&&!rangeClear(selIn,selOut);
           if(invalidated){ selIn=selOut=null; }
@@ -1277,8 +1348,10 @@
     function rangeClear(a,b){ var ok=true; eachNight(a,b,function(d){ if(blocked[d])ok=false; }); return ok; }
     function note(t,ok){ msg.textContent=t||''; msg.className=ok?'ok':''; }
 
-    function render(){
+    function render(slideDir){
       today=laToday(); startIdx=(+today.slice(0,4))*12+(+today.slice(5,7)-1);
+      grid.classList.remove('slide-l','slide-r');
+      if(slideDir&&!reduce){ void grid.offsetWidth; grid.classList.add(slideDir==='l'?'slide-l':'slide-r'); }
       title.textContent=MONTHS[view.m]+' '+view.y;
       var idx=view.y*12+view.m;
       prevB.disabled=idx<=startIdx; nextB.disabled=idx>=startIdx+17;
@@ -1361,13 +1434,47 @@
       gotoStep(2);
     });
     backBtn.addEventListener('click',function(){ if(sending)return; gotoStep(1); });
-    // Guests arriving via any "Check availability" CTA land with the calendar focused.
-    document.querySelectorAll('a[href="#book"]').forEach(function(a){
-      a.addEventListener('click',function(){ setTimeout(focusCal, reduce?80:500); });
-    });
+    // ---- Full-screen booking takeover: every "Check availability" CTA opens it;
+    //      the rest of the site steps aside (dialog semantics, focus trap, Esc). ----
+    var lastTrigger=null;
+    function openModal(trigger){
+      if(root.hidden) return false;
+      lastTrigger=trigger||document.activeElement;
+      modal.hidden=false;
+      requestAnimationFrame(function(){ modal.classList.add('open'); });
+      document.body.classList.add('lock');
+      setTimeout(function(){ (wstep===1)?focusCal():step2.focus({preventScroll:true}); }, reduce?60:380);
+      return true;
+    }
+    function closeModal(){
+      if(modal.hidden) return;
+      modal.classList.remove('open');
+      document.body.classList.remove('lock');
+      var delay=reduce?0:320;
+      setTimeout(function(){ modal.hidden=true; }, delay);
+      if(lastTrigger&&lastTrigger.focus){ lastTrigger.focus({preventScroll:true}); lastTrigger=null; }
+    }
+    bmClose.addEventListener('click',closeModal);
+    bmScrim.addEventListener('click',closeModal);
+    document.addEventListener('keydown',function(e){
+      if(modal.hidden) return;
+      if(e.key==='Escape'){ e.stopPropagation(); closeModal(); }
+      if(e.key==='Tab'){
+        var f=bmPanel.querySelectorAll('button:not([disabled]):not([hidden]),input,textarea,[tabindex="-1"]');
+        f=[].filter.call(f,function(el){ return el.offsetParent!==null||el===document.activeElement; });
+        if(!f.length) return;
+        var first=f[0], last=f[f.length-1];
+        if(e.shiftKey&&document.activeElement===first){ e.preventDefault(); last.focus(); }
+        else if(!e.shiftKey&&document.activeElement===last){ e.preventDefault(); first.focus(); }
+      }
+    },true);
+    if(bookOpen) bookOpen.addEventListener('click',function(){ openModal(bookOpen); });
+    // The global anchor handler routes #book clicks here; returns false when the API is
+    // down so the click falls through to the #book section's call/text CTAs.
+    window.__openBooking=openModal;
 
-    prevB.addEventListener('click',function(){ if(--view.m<0){view.m=11;view.y--;} render(); });
-    nextB.addEventListener('click',function(){ if(++view.m>11){view.m=0;view.y++;} render(); });
+    prevB.addEventListener('click',function(){ if(--view.m<0){view.m=11;view.y--;} render('r'); });
+    nextB.addEventListener('click',function(){ if(++view.m>11){view.m=0;view.y++;} render('l'); });
 
     function syncSteppers(){
       root.querySelectorAll('[data-step]').forEach(function(btn){
