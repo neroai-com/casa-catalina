@@ -1,8 +1,8 @@
 {
-  "name": "@catalina/site-casa-catalina",
+  "name": "@catalina/site-unit2-main",
   "version": "1.0.0",
   "private": true,
-  "description": "Casa Catalina landing page \u2014 static site, content + booking served by the CMS via /api rewrites",
+  "description": "Casa Catalina \u2014 main site (334 Whittley unit 2), the template the other property sites derive from",
   "scripts": {
     "build": "echo \"static \u2014 nothing to build\""
   }

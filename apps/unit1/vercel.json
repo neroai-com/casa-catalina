@@ -2,19 +2,19 @@
   "rewrites": [
     {
       "source": "/api/availability",
-      "destination": "https://catalina-rentals-cms.vercel.app/api/public/334whittley-unit2/availability"
+      "destination": "https://catalina-rentals-cms.vercel.app/api/public/334whittley-unit1/availability"
     },
     {
       "source": "/api/request",
-      "destination": "https://catalina-rentals-cms.vercel.app/api/public/334whittley-unit2/request"
+      "destination": "https://catalina-rentals-cms.vercel.app/api/public/334whittley-unit1/request"
     },
     {
       "source": "/api/content",
-      "destination": "https://catalina-rentals-cms.vercel.app/api/public/334whittley-unit2/content"
+      "destination": "https://catalina-rentals-cms.vercel.app/api/public/334whittley-unit1/content"
     },
     {
       "source": "/api/image/:id",
-      "destination": "https://catalina-rentals-cms.vercel.app/api/public/334whittley-unit2/image?id=:id"
+      "destination": "https://catalina-rentals-cms.vercel.app/api/public/334whittley-unit1/image?id=:id"
     }
   ],
   "headers": [
