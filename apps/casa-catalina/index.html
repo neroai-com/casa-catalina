@@ -380,7 +380,7 @@
   /* booking wizard steps */
   .bc-prog{display:flex;justify-content:center;gap:1.4rem;list-style:none;margin:0 0 1rem;padding:0}
   .bc-prog li{display:inline-flex;align-items:center;gap:.45rem;font-family:var(--mono);font-size:.66rem;
-    letter-spacing:.14em;text-transform:uppercase;color:rgba(234,240,238,.45)}
+    letter-spacing:.14em;text-transform:uppercase;color:rgba(234,240,238,.62)}
   .bc-prog li .dot{width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;
     border:1px solid rgba(255,255,255,.3);font-size:.7rem;letter-spacing:0}
   .bc-prog li[aria-current]{color:#fff}
@@ -881,7 +881,7 @@
               <span><span class="lg sel"></span>Your stay</span>
             </div>
           </div>
-          <p class="bc-sum" id="bcSum">Tap your check-in date to start</p>
+          <p class="bc-sum" id="bcSum" aria-live="polite">Tap your check-in date to start</p>
           <button type="button" class="btn btn-light bc-next" id="bcNextStep" disabled>Select your dates</button>
           </div><!-- /bcStep1 -->
 
@@ -1226,8 +1226,10 @@
         nextStep=document.getElementById('bcNextStep'), backBtn=document.getElementById('bcBack'),
         backLabel=document.getElementById('bcBackLabel'), prog1=document.getElementById('bcP1'), prog2=document.getElementById('bcP2');
     var wstep=1;
-    // Per-property minimum stay, delivered with the CMS content (server enforces too).
-    function minN(){ var c=window.__cmsContent, v=c&&parseInt(c.minNights,10); return v>=1?v:1; }
+    // Per-property settings delivered with the CMS content (server enforces both too).
+    function minN(){ var c=window.__cmsContent, v=c&&parseInt(c.minNights,10); return v>=1?Math.min(v,30):1; }
+    function guestCap(){ var c=window.__cmsContent, v=c&&parseInt(c.sleeps,10); return v>=1?Math.min(v,20):6; }
+    function propName(){ var c=window.__cmsContent; return (c&&c.name)||'This home'; }
     var MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
     var MON3=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     function p2(n){ return (n<10?'0':'')+n; }
@@ -1252,8 +1254,10 @@
           (j.blocked||[]).forEach(function(b){ eachNight(b.start,b.end,function(d){ blocked[d]=1; }); });
           if(first){ root.hidden=false; syncSteppers(); }
           // If a refresh reveals the current selection now conflicts, start over.
-          if(selIn&&selOut&&!rangeClear(selIn,selOut)){ selIn=selOut=null; if(wstep!==1)gotoStep(1); note('Availability changed — please pick your dates again.'); }
+          var invalidated=selIn&&selOut&&!rangeClear(selIn,selOut);
+          if(invalidated){ selIn=selOut=null; }
           render(); update();
+          if(invalidated){ if(wstep!==1)gotoStep(1); else focusCal(); note('Availability changed — please pick your dates again.'); }
         })
         .catch(function(){ /* static host — booking module stays hidden, call/text CTAs remain */ });
     }
@@ -1293,7 +1297,8 @@
         // A blocked day can still be a CHECK-OUT day (the prior guest's checkout morning).
         var clickable=!isPast&&(!isBlocked||(selIn&&!selOut&&ds>selIn&&rangeClear(selIn,ds)));
         b.disabled=!clickable;
-        b.setAttribute('aria-label',MONTHS[view.m]+' '+d+(isBlocked?' — booked':''));
+        var sel=(selIn&&ds===selIn)?' — selected check-in':(selOut&&ds===selOut)?' — selected check-out':(selIn&&selOut&&ds>selIn&&ds<selOut)?' — selected night':'';
+        b.setAttribute('aria-label',MONTHS[view.m]+' '+d+(isBlocked?' — booked':'')+sel);
         if(clickable) b.addEventListener('click',function(){ pick(ds); });
         grid.appendChild(b);
       })(d);
@@ -1308,13 +1313,16 @@
       else if(nightsBetween(selIn,ds)<minN()){ note('Minimum stay is '+minN()+' nights — pick a later check-out.'); }
       else selOut=ds;
       update(); render();
-      // render() rebuilt the grid — put keyboard focus back on the picked date.
+      // render() rebuilt the grid — put keyboard focus back on the picked date
+      // (or the Continue button when that day re-rendered disabled, e.g. a changeover checkout).
       var fb=grid.querySelector('button[data-date="'+ds+'"]');
-      if(fb) fb.focus({preventScroll:true});
+      if(fb&&!fb.disabled) fb.focus({preventScroll:true});
+      else if(!nextStep.disabled) nextStep.focus({preventScroll:true});
+      else focusCal();
     }
 
     function update(){
-      if(selIn&&selOut){
+      if(selIn&&selOut&&nightsBetween(selIn,selOut)>=minN()){
         var n=nightsBetween(selIn,selOut), b=document.createElement('b');
         b.textContent=fmt(selIn)+' → '+fmt(selOut);
         sum.textContent=''; sum.appendChild(b); sum.appendChild(document.createTextNode(' · '+n+' night'+(n>1?'s':'')));
@@ -1347,7 +1355,11 @@
         focusCal();
       }
     }
-    nextStep.addEventListener('click',function(){ if(sending||!selIn||!selOut)return; gotoStep(2); });
+    nextStep.addEventListener('click',function(){
+      if(sending||!selIn||!selOut)return;
+      if(nightsBetween(selIn,selOut)<minN()){ note('Minimum stay is '+minN()+' nights — pick a later check-out.'); return; }
+      gotoStep(2);
+    });
     backBtn.addEventListener('click',function(){ if(sending)return; gotoStep(1); });
     // Guests arriving via any "Check availability" CTA land with the calendar focused.
     document.querySelectorAll('a[href="#book"]').forEach(function(a){
@@ -1362,7 +1374,7 @@
         var k=btn.getAttribute('data-step'), d=+btn.getAttribute('data-d'), v=party[k]+d, L=LIMITS[k];
         var hard=v<L[0]||v>L[1];
         // The 6-guest cap dims the button but keeps it tappable so tapping explains why.
-        var capped=!hard&&(k==='adults'||k==='children')&&d>0&&party.adults+party.children>=6;
+        var capped=!hard&&(k==='adults'||k==='children')&&d>0&&party.adults+party.children>=guestCap();
         btn.disabled=hard;
         btn.classList.toggle('capped',capped);
         if(capped) btn.setAttribute('aria-disabled','true'); else btn.removeAttribute('aria-disabled');
@@ -1373,7 +1385,7 @@
         if(sending)return;
         var k=btn.getAttribute('data-step'), d=+btn.getAttribute('data-d'), v=party[k]+d, L=LIMITS[k];
         if(v<L[0]||v>L[1])return;
-        if((k==='adults'||k==='children')&&d>0&&party.adults+party.children>=6){ note('Casa Catalina sleeps up to 6 guests.'); return; }
+        if((k==='adults'||k==='children')&&d>0&&party.adults+party.children>=guestCap()){ note(propName()+' sleeps up to '+guestCap()+' guests.'); return; }
         party[k]=v; root.querySelector('[data-val="'+k+'"]').textContent=v; note(''); syncSteppers();
       });
     });
@@ -1402,15 +1414,19 @@
           var p=document.createElement('p');
           p.textContent='Thanks '+name.split(' ')[0]+' — Thomas & Megan will confirm '+fmt(ci)+' → '+fmt(co)+' by phone or email, usually within a day.';
           done.appendChild(h); done.appendChild(p);
+          done.setAttribute('tabindex','-1'); done.setAttribute('role','status');
           root.textContent=''; root.appendChild(done);
+          done.focus({preventScroll:true});
         } else {
+          submit.disabled=false; submit.textContent='Request these dates';
           note((x.j&&x.j.error)||'Something went wrong — please call or text us.');
           update();
           // Dates taken or rejected? Re-sync availability so the calendar shows the truth.
           if(x.status===409||x.status===400) loadAvail(false);
         }
       })
-      .catch(function(){ sending=false; note('Network problem — please call or text us.'); update(); });
+      .catch(function(){ sending=false; submit.disabled=false; submit.textContent='Request these dates';
+        note('Network problem — please call or text us.'); update(); });
     });
   })();
 
