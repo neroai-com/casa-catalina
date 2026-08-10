@@ -11,7 +11,10 @@ module.exports = async (req, res) => {
     const data = await load();
     const p = data.properties[slug];
     if (!p) return send(res, 404, { error: 'unknown property' });
-    send(res, 200, { content: p.content || {} });
+    send(res, 200, {
+      content: p.content || {},
+      images: (p.images || []).map(x => ({ id: x.id, caption: x.caption })),
+    });
   } catch (e) {
     console.error('content:', e.message);
     send(res, 500, { error: 'unavailable' });

@@ -11,6 +11,10 @@
     {
       "source": "/api/content",
       "destination": "https://catalina-rentals-cms.vercel.app/api/public/334whittley-unit1/content"
+    },
+    {
+      "source": "/api/image/:id",
+      "destination": "https://catalina-rentals-cms.vercel.app/api/public/334whittley-unit1/image?id=:id"
     }
   ],
   "headers": [

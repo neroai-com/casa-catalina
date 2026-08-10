@@ -3,7 +3,7 @@
 const { load, mutate } = require('../../../../packages/core/store');
 const { isAuthed, sameOrigin } = require('../../../../packages/core/auth');
 const { cleanText, send } = require('../../../../packages/core/util');
-const { slugOk, sanitizeContent } = require('../../../../packages/core/props');
+const { slugOk, sanitizeContent, sanitizeSettings } = require('../../../../packages/core/props');
 
 module.exports = async (req, res) => {
   if (!['POST', 'DELETE'].includes(req.method)) return send(res, 405, { error: 'method not allowed' });
@@ -30,6 +30,7 @@ module.exports = async (req, res) => {
     const name = cleanText(b.name, 60);
     if (name.length < 2) return send(res, 400, { error: 'Please add a property name.' });
     const content = sanitizeContent(b.content, cleanText);
+    const settings = sanitizeSettings(b.settings, cleanText);
 
     const out = await mutate(function (data) {
       const existing = data.properties[b.slug];
@@ -39,6 +40,8 @@ module.exports = async (req, res) => {
         createdAt: existing ? existing.createdAt : new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         content: { ...(existing ? existing.content : {}), ...content },
+        settings: { ...(existing ? existing.settings : {}), ...settings },
+        images: existing ? (existing.images || []) : [],
       };
       return { save: true, status: 200, body: { ok: true, property: data.properties[b.slug] } };
     });

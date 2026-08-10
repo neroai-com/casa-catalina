@@ -27,6 +27,10 @@ const CONTENT_FIELDS = {
   ratesNote:    { max: 60,  label: 'Rates note (sticky bar)' },
   bookLead:     { max: 300, label: 'Booking section intro' },
   payNote:      { max: 160, label: 'Payment note' },
+  checkInTime:  { max: 20,  label: 'Check-in time' },
+  checkOutTime: { max: 20,  label: 'Check-out time' },
+  ratingLine:   { max: 60,  label: 'Rating line (hero chip)' },
+
 };
 
 function sanitizeContent(input, cleanText) {
@@ -38,4 +42,21 @@ function sanitizeContent(input, cleanText) {
   return out;
 }
 
-module.exports = { slugOk, getSlug, CONTENT_FIELDS, sanitizeContent };
+// Admin-only per-property settings (never exposed on public endpoints).
+const SETTINGS_FIELDS = {
+  nightlyRate: { max: 6,   label: 'Nightly rate (USD)' },
+  cleaningFee: { max: 6,   label: 'Cleaning fee (USD)' },
+  whopLink:    { max: 200, label: 'Whop checkout link' },
+  lpUrl:       { max: 200, label: 'Live site URL' },
+};
+
+function sanitizeSettings(input, cleanText) {
+  const out = {};
+  if (!input || typeof input !== 'object') return out;
+  for (const k of Object.keys(SETTINGS_FIELDS)) {
+    if (input[k] != null) out[k] = cleanText(String(input[k]), SETTINGS_FIELDS[k].max);
+  }
+  return out;
+}
+
+module.exports = { slugOk, getSlug, CONTENT_FIELDS, sanitizeContent, SETTINGS_FIELDS, sanitizeSettings };

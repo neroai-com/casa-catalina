@@ -1,7 +1,6 @@
 dev-data.json
+dev-blobs/
 node_modules/
 .vercel/
 .env
 .env*.local
-.vercel
-.env*

@@ -96,4 +96,31 @@ async function mutate(fn) {
   return { save: false, status: 503, body: { error: 'Busy — please try again.' } };
 }
 
-module.exports = { load, mutate };
+// --- binary-ish blobs (images) live under separate keys, not in the main doc ---
+function blobKey(id) { return 'catalina-rentals:blob:' + id; }
+
+async function setBlob(id, str) {
+  assertConfigured();
+  if (redisEnv()) { await redisCmd(['SET', blobKey(id), str]); return; }
+  const fs = require('fs'), path = require('path');
+  const dir = path.join(process.cwd(), 'dev-blobs');
+  fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(path.join(dir, id), str);
+}
+
+async function getBlob(id) {
+  assertConfigured();
+  if (redisEnv()) return await redisCmd(['GET', blobKey(id)]);
+  const fs = require('fs'), path = require('path');
+  try { return fs.readFileSync(path.join(process.cwd(), 'dev-blobs', id), 'utf8'); }
+  catch { return null; }
+}
+
+async function delBlob(id) {
+  assertConfigured();
+  if (redisEnv()) { await redisCmd(['DEL', blobKey(id)]); return; }
+  const fs = require('fs'), path = require('path');
+  try { fs.unlinkSync(path.join(process.cwd(), 'dev-blobs', id)); } catch {}
+}
+
+module.exports = { load, mutate, setBlob, getBlob, delBlob };

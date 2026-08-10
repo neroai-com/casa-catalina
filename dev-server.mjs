@@ -87,7 +87,10 @@ const LP_REWRITES = {
   '/api/content': 'public/[property]/content.js',
 };
 http.createServer(async (req, res) => {
-  const p = new URL(req.url, `http://${req.headers.host}`).pathname;
+  const u = new URL(req.url, `http://${req.headers.host}`);
+  const p = u.pathname;
   if (LP_REWRITES[p]) return runApi(req, res, LP_REWRITES[p], { property: LP_SLUG });
+  const img = p.match(/^\/api\/image\/([a-f0-9]{16})$/);
+  if (img) return runApi(req, res, 'public/[property]/image.js', { property: LP_SLUG, id: img[1] });
   serveStatic('apps/casa-catalina', req, res, p);
 }).listen(LP_PORT, () => console.log(`[dev] site http://localhost:${LP_PORT}`));

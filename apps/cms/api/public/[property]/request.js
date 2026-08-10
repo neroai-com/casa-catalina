@@ -67,9 +67,12 @@ module.exports = async (req, res) => {
         return { save: false, status: 429, body: { error: 'Please call or text us to book.' } };
       data.meta.recent.push({ ip: iph, t: now });
 
+      const rate = parseFloat((prop.settings || {}).nightlyRate) || 0;
+      const fee = parseFloat((prop.settings || {}).cleaningFee) || 0;
       request = {
         id: id(), property: slug, status: 'pending', createdAt: new Date().toISOString(),
         checkIn, checkOut, nights: n, adults, children, infants, pets, name, contact, note,
+        quote: rate > 0 ? { nightly: rate, cleaning: fee, total: Math.round((rate * n + fee) * 100) / 100 } : null,
       };
       data.requests.push(request);
       return { save: true, status: 200, body: { ok: true, id: request.id } };
