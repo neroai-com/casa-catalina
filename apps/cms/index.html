@@ -5,7 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Catalina Rentals — Property Manager</title>
 <meta name="robots" content="noindex, nofollow">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8F%A0%3C/text%3E%3C/svg%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="images/favicon-192.png">
+<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
 <style>
   :root{
     --canvas:#F1F0EA; --paper:#FBFAF6; --mist:#E6ECE8; --ink:#16302E; --stone:#4F625F;
@@ -46,7 +48,10 @@
   .shell{display:flex;min-height:100vh}
   aside{width:230px;flex:none;background:var(--ink);color:#EAF0EE;display:flex;flex-direction:column;
     padding:1.2rem .9rem calc(1rem + env(safe-area-inset-bottom))}
-  .brand{font-family:var(--serif);font-size:1.15rem;font-weight:600;color:#fff;padding:.2rem .55rem 1rem}
+  .brand{font-family:var(--serif);font-size:1.15rem;font-weight:600;color:#fff;padding:.2rem .55rem 1rem;
+    display:flex;align-items:center;gap:.6rem}
+  .brand .brandlogo{width:42px;height:42px;flex:none}
+  .loginlogo{width:128px;height:128px;margin-bottom:.4rem}
   .brand small{display:block;font-family:var(--mono);font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--sea);margin-bottom:.2rem}
   .pswitch{margin:0 .3rem 1rem}
   .pswitch select{width:100%;background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.2);color:#fff}
@@ -164,6 +169,7 @@
 <body>
 
 <div id="login">
+  <img class="loginlogo" src="images/logo-casa-catalina.png" alt="Catalina Rentals — Vacation Rental" width="128" height="128">
   <h2>Catalina Rentals</h2>
   <div class="sub">Property Manager</div>
   <form id="loginForm">
@@ -176,7 +182,7 @@
 <div id="app">
   <div class="shell">
     <aside>
-      <div class="brand"><small>Catalina Rentals</small>Property Manager</div>
+      <div class="brand"><img class="brandlogo" src="images/logo-casa-catalina.png" alt="" width="42" height="42"><span><small>Catalina Rentals</small>Property Manager</span></div>
       <div class="pswitch"><select id="psel" aria-label="Property"></select></div>
       <nav class="side" id="nav"></nav>
       <div class="sidefoot">
