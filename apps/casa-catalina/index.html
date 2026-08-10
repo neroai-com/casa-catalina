@@ -377,6 +377,25 @@
   #bcSubmit:disabled{opacity:.55;cursor:default}
   #bcMsg{margin-top:.7rem;text-align:center;font-size:.88rem;min-height:1.3em;color:#FFD9C4}
   #bcMsg.ok{color:#B8E6C8}
+  /* booking wizard steps */
+  .bc-prog{display:flex;justify-content:center;gap:1.4rem;list-style:none;margin:0 0 1rem;padding:0}
+  .bc-prog li{display:inline-flex;align-items:center;gap:.45rem;font-family:var(--mono);font-size:.66rem;
+    letter-spacing:.14em;text-transform:uppercase;color:rgba(234,240,238,.45)}
+  .bc-prog li .dot{width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;
+    border:1px solid rgba(255,255,255,.3);font-size:.7rem;letter-spacing:0}
+  .bc-prog li[aria-current]{color:#fff}
+  .bc-prog li[aria-current] .dot{background:var(--ocean);border-color:var(--ocean)}
+  .bc-prog li.done .dot{background:rgba(127,169,172,.35);border-color:transparent}
+  #bcStep1:not([hidden]),#bcStep2:not([hidden]){animation:bcstep .4s var(--ease)}
+  @keyframes bcstep{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){#bcStep1:not([hidden]),#bcStep2:not([hidden]){animation:none}}
+  #bcStep2{outline:none}
+  .bc-next{margin-top:1rem;width:100%}
+  .bc-next:disabled{opacity:.55;cursor:default}
+  .bc-back{display:inline-flex;align-items:center;gap:.45rem;background:none;border:0;color:var(--sea);cursor:pointer;
+    font:inherit;font-size:.92rem;font-weight:600;padding:.5rem .2rem;margin-bottom:.3rem}
+  .bc-back:hover{color:#fff}
+  .bc-back .icon{width:14px;height:14px;transform:rotate(90deg)}
   .bc-done{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.2);border-radius:16px;
     padding:1.4rem 1.2rem;text-align:center;margin-top:1.6rem}
   .bc-done h3{font-family:var(--serif);color:#fff;font-size:1.35rem;margin:0 0 .4rem}
@@ -843,6 +862,11 @@
         <p class="lead" data-cms="bookLead">Tell us when you'd like to come and how many guests, and Thomas &amp; Megan will confirm by email or text. For the fastest answer, call or text the host directly.</p>
 
         <div id="bookCal" hidden>
+          <ol class="bc-prog" id="bcProg" aria-label="Booking steps">
+            <li id="bcP1" aria-current="step"><span class="dot">1</span> Dates</li>
+            <li id="bcP2"><span class="dot">2</span> Guests &amp; details</li>
+          </ol>
+          <div id="bcStep1">
           <div class="bc-cal" role="group" aria-label="Availability calendar">
             <div class="bc-head">
               <button type="button" class="bc-nav" id="bcPrev" aria-label="Previous month">&#8249;</button>
@@ -858,6 +882,11 @@
             </div>
           </div>
           <p class="bc-sum" id="bcSum">Tap your check-in date to start</p>
+          <button type="button" class="btn btn-light bc-next" id="bcNextStep" disabled>Select your dates</button>
+          </div><!-- /bcStep1 -->
+
+          <div id="bcStep2" hidden tabindex="-1" role="group" aria-label="Guests and contact details">
+          <button type="button" class="bc-back" id="bcBack"><svg class="icon" aria-hidden="true"><use href="#i-chev"/></svg> <span id="bcBackLabel">Change dates</span></button>
           <div class="bc-party">
             <div class="bc-step"><span class="lbl">Adults<small>13+</small></span><span class="ctl"><button type="button" data-step="adults" data-d="-1" aria-label="Fewer adults">&#8722;</button><span class="val" data-val="adults">2</span><button type="button" data-step="adults" data-d="1" aria-label="More adults">+</button></span></div>
             <div class="bc-step"><span class="lbl">Children<small>2&#8211;12</small></span><span class="ctl"><button type="button" data-step="children" data-d="-1" aria-label="Fewer children">&#8722;</button><span class="val" data-val="children">0</span><button type="button" data-step="children" data-d="1" aria-label="More children">+</button></span></div>
@@ -870,7 +899,8 @@
             <input type="text" id="bcContact" placeholder="Phone or email" autocomplete="tel" maxlength="120" inputmode="email">
             <textarea id="bcNote" placeholder="Anything we should know? (optional)" maxlength="500"></textarea>
           </div>
-          <button type="button" class="btn btn-light" id="bcSubmit" disabled>Select dates to request</button>
+          <button type="button" class="btn btn-light" id="bcSubmit">Request these dates</button>
+          </div><!-- /bcStep2 -->
           <p id="bcMsg" role="status"></p>
         </div>
 
@@ -1159,6 +1189,7 @@
       .then(function(r){ if(!r.ok)throw 0; return r.json(); })
       .then(function(j){
         var c=j&&j.content; if(!c) return;
+        window.__cmsContent=c;
         document.querySelectorAll('[data-cms]').forEach(function(elm){
           var k=elm.getAttribute('data-cms');
           if(c[k]!=null&&c[k]!==''){ elm.textContent=c[k]; if(elm.hasAttribute('data-count')&&/^\d+$/.test(c[k])) elm.setAttribute('data-count',c[k]); }
@@ -1190,7 +1221,13 @@
     var root=document.getElementById('bookCal'); if(!root||!window.fetch)return;
     var grid=document.getElementById('bcGrid'), title=document.getElementById('bcTitle'),
         prevB=document.getElementById('bcPrev'), nextB=document.getElementById('bcNext'),
-        sum=document.getElementById('bcSum'), submit=document.getElementById('bcSubmit'), msg=document.getElementById('bcMsg');
+        sum=document.getElementById('bcSum'), submit=document.getElementById('bcSubmit'), msg=document.getElementById('bcMsg'),
+        step1=document.getElementById('bcStep1'), step2=document.getElementById('bcStep2'),
+        nextStep=document.getElementById('bcNextStep'), backBtn=document.getElementById('bcBack'),
+        backLabel=document.getElementById('bcBackLabel'), prog1=document.getElementById('bcP1'), prog2=document.getElementById('bcP2');
+    var wstep=1;
+    // Per-property minimum stay, delivered with the CMS content (server enforces too).
+    function minN(){ var c=window.__cmsContent, v=c&&parseInt(c.minNights,10); return v>=1?v:1; }
     var MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
     var MON3=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     function p2(n){ return (n<10?'0':'')+n; }
@@ -1215,7 +1252,7 @@
           (j.blocked||[]).forEach(function(b){ eachNight(b.start,b.end,function(d){ blocked[d]=1; }); });
           if(first){ root.hidden=false; syncSteppers(); }
           // If a refresh reveals the current selection now conflicts, start over.
-          if(selIn&&selOut&&!rangeClear(selIn,selOut)){ selIn=selOut=null; note('Availability changed — please pick your dates again.'); }
+          if(selIn&&selOut&&!rangeClear(selIn,selOut)){ selIn=selOut=null; if(wstep!==1)gotoStep(1); note('Availability changed — please pick your dates again.'); }
           render(); update();
         })
         .catch(function(){ /* static host — booking module stays hidden, call/text CTAs remain */ });
@@ -1268,6 +1305,7 @@
       if(!selIn||selOut){ selIn=ds; selOut=null; }
       else if(ds<=selIn){ selIn=ds; }
       else if(!rangeClear(selIn,ds)){ selIn=ds; selOut=null; note('That range includes a booked night — starting over from this date.'); }
+      else if(nightsBetween(selIn,ds)<minN()){ note('Minimum stay is '+minN()+' nights — pick a later check-out.'); }
       else selOut=ds;
       update(); render();
       // render() rebuilt the grid — put keyboard focus back on the picked date.
@@ -1280,15 +1318,41 @@
         var n=nightsBetween(selIn,selOut), b=document.createElement('b');
         b.textContent=fmt(selIn)+' → '+fmt(selOut);
         sum.textContent=''; sum.appendChild(b); sum.appendChild(document.createTextNode(' · '+n+' night'+(n>1?'s':'')));
-        submit.disabled=false; submit.textContent='Request these dates';
+        nextStep.disabled=false; nextStep.textContent='Continue — '+n+' night'+(n>1?'s':'');
       } else if(selIn){
-        sum.textContent=fmt(selIn)+' — now tap your check-out date';
-        submit.disabled=true; submit.textContent='Select dates to request';
+        sum.textContent=fmt(selIn)+' — now tap your check-out date'+(minN()>1?' ('+minN()+'-night minimum)':'');
+        nextStep.disabled=true; nextStep.textContent='Select your dates';
       } else {
         sum.textContent='Tap your check-in date to start';
-        submit.disabled=true; submit.textContent='Select dates to request';
+        nextStep.disabled=true; nextStep.textContent='Select your dates';
       }
     }
+
+    // ---- wizard navigation: dates first, then guests & details ----
+    function focusCal(){
+      if(root.hidden||wstep!==1) return;
+      var b=grid.querySelector('button.start')||grid.querySelector('button:not(:disabled)');
+      if(b) b.focus({preventScroll:true});
+    }
+    function gotoStep(n){
+      wstep=n; note('');
+      step1.hidden=n!==1; step2.hidden=n!==2;
+      if(n===2){ prog1.removeAttribute('aria-current'); prog1.classList.add('done'); prog2.setAttribute('aria-current','step'); }
+      else { prog2.removeAttribute('aria-current'); prog1.classList.remove('done'); prog1.setAttribute('aria-current','step'); }
+      if(n===2){
+        backLabel.textContent=(selIn&&selOut)?fmt(selIn)+' → '+fmt(selOut)+' · change dates':'Change dates';
+        step2.focus({preventScroll:true});
+        step2.scrollIntoView({behavior:reduce?'auto':'smooth',block:'nearest'});
+      } else {
+        focusCal();
+      }
+    }
+    nextStep.addEventListener('click',function(){ if(sending||!selIn||!selOut)return; gotoStep(2); });
+    backBtn.addEventListener('click',function(){ if(sending)return; gotoStep(1); });
+    // Guests arriving via any "Check availability" CTA land with the calendar focused.
+    document.querySelectorAll('a[href="#book"]').forEach(function(a){
+      a.addEventListener('click',function(){ setTimeout(focusCal, reduce?80:500); });
+    });
 
     prevB.addEventListener('click',function(){ if(--view.m<0){view.m=11;view.y--;} render(); });
     nextB.addEventListener('click',function(){ if(++view.m>11){view.m=0;view.y++;} render(); });

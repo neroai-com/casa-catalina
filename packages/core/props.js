@@ -21,6 +21,7 @@ const CONTENT_FIELDS = {
   phone:        { max: 24,  label: 'Phone (digits, for tel/sms links)' },
   email:        { max: 80,  label: 'Email' },
   sleeps:       { max: 2,   label: 'Sleeps (number)' },
+  minNights:    { max: 2,   label: 'Minimum nights' },
   bedrooms:     { max: 2,   label: 'Bedrooms (number)' },
   baths:        { max: 3,   label: 'Baths (number)' },
   ratesNote:    { max: 60,  label: 'Rates note (sticky bar)' },

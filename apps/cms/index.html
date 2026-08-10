@@ -261,7 +261,7 @@
     body.appendChild(el('h2','sec','Landing page content'));
     var form=el('form','cform'); form.id='contentForm';
     var content=(STATE.props[slug]&&STATE.props[slug].content)||{};
-    var groups=[['name','locationLine'],['heroTitle'],['heroLead'],['phone','email'],['sleeps','bedrooms','baths'],['ratesNote'],['bookLead'],['payNote']];
+    var groups=[['name','locationLine'],['heroTitle'],['heroLead'],['phone','email'],['sleeps','bedrooms','baths'],['minNights','ratesNote'],['bookLead'],['payNote']];
     var inputs={};
     groups.forEach(function(g){
       var row=el('div','row'+(g.length===2?' grid2':g.length===3?' grid3':''));

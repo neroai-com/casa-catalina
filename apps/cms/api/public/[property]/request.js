@@ -44,6 +44,11 @@ module.exports = async (req, res) => {
       const prop = data.properties[slug];
       if (!prop) return { save: false, status: 404, body: { error: 'unknown property' } };
 
+      // Per-property minimum stay (from CMS settings; default 1 night).
+      const minN = Math.max(1, parseInt(prop.content && prop.content.minNights, 10) || 1);
+      if (n < minN)
+        return { save: false, status: 400, body: { error: `Minimum stay is ${minN} night${minN > 1 ? 's' : ''}.` } };
+
       // Per-property sleeps cap (from CMS content; default 6).
       const cap = parseInt(prop.content && prop.content.sleeps, 10) || 6;
       if (adults + children > cap)
